@@ -19,8 +19,8 @@ A sleek, modern countdown timer built with vanilla HTML, CSS, and JavaScript. De
 - **Reset**: Always-available reset button clears the timer back to 00:00:00
 
 ### Sound Alerts
-- **4 Alarm Sounds**: Choose from Bark, Bell, Chime (default), or Alarm
-- **Continuous Alert**: Alarm repeats until manually stopped when timer reaches zero
+- **4 Alarm Sounds**: Choose from Dream, Inspire, Wing, or Morning
+- **Continuous Alert**: Alarm loops until manually stopped when timer reaches zero
 - **Volume Control**: Adjustable volume slider from silent to maximum
 - **Mute Toggle**: Quick mute/unmute button
 - **Preview Sound**: Test your selected alarm sound before starting
@@ -92,13 +92,13 @@ Works on all modern browsers that support:
 
 ## Sound System
 
-The app uses the **Web Audio API** to synthesize all alarm sounds:
-- **Bark**: Realistic dog bark using noise + formant filters
-- **Bell**: Rich harmonics simulating a resonant bell
-- **Chime**: Descending wind chime melody
-- **Alarm**: Urgent two-tone emergency alert
+The app plays audio tracks from `assets/sounds/` and loops the selected track on completion:
+- **Dream**: `Dream.mp3`
+- **Inspire**: `Inspire.mp3`
+- **Wing**: `Wing.mp3`
+- **Morning**: `Morning.mp3`
 
-Optional: Add `click.mp3`, `start.mp3`, and `alarm.mp3` to `assets/sounds/` for custom UI sounds.
+Optional: Add `click.mp3` and `start.mp3` to `assets/sounds/` for UI feedback sounds.
 
 ## License
 
