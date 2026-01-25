@@ -43,14 +43,19 @@ body {
 header {
     width: 100%;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
+    /* Center the content */
     align-items: center;
+    position: relative;
+    /* For absolute positioning of the button */
 }
 
 h1 {
-    font-weight: 600;
-    font-size: 1.5rem;
+    font-weight: 700;
+    font-size: 3rem;
+    /* Bigger font */
     letter-spacing: -0.025em;
+    text-align: center;
 }
 
 .icon-button {
@@ -64,6 +69,10 @@ h1 {
     display: flex;
     align-items: center;
     justify-content: center;
+    position: absolute;
+    /* Take out of flow to prevent pushing H1 */
+    right: 0;
+    /* Position on the right */
 }
 
 .icon-button:hover {
