@@ -68,6 +68,7 @@ class Timer {
         this.loadAudio();
         // Sync volume with slider default
         this.volume = parseFloat(this.volumeSlider.value);
+        this.applyVolumeToAudio();
     }
 
     loadSettings() {
@@ -152,9 +153,10 @@ class Timer {
 
         // Sound
         this.volumeSlider.addEventListener('input', (e) => {
-            this.volume = parseFloat(e.target.value);
-            this.applyVolumeToAudio();
-            this.playSound('click'); // Feedback
+            this.handleVolumeChange(e.target.value, false);
+        });
+        this.volumeSlider.addEventListener('change', (e) => {
+            this.handleVolumeChange(e.target.value, true);
         });
 
         this.muteBtn.addEventListener('click', () => this.toggleMute());
@@ -818,6 +820,16 @@ class Timer {
         this.muteBtn.innerHTML = this.isMuted
             ? '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>'
             : '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>';
+    }
+
+    handleVolumeChange(value, playFeedback) {
+        const nextVolume = Math.min(1, Math.max(0, parseFloat(value)));
+        if (Number.isNaN(nextVolume)) return;
+        this.volume = nextVolume;
+        this.applyVolumeToAudio();
+        if (playFeedback) {
+            this.playSound('click');
+        }
     }
 
     beep(freq = 440, duration = 200) {
