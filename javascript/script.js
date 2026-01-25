@@ -581,7 +581,6 @@ class Timer {
                 if (isPreview) this.previewCtx = ctx;
                 this.playChimeSound(ctx);
         }
-        }
     }
 
     playBarkSound(ctx) {
