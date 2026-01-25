@@ -32,7 +32,7 @@ body {
 
 .app-container {
     width: 100%;
-    max-width: 600px;
+    max-width: 800px;
     padding: 2rem;
     display: flex;
     flex-direction: column;
@@ -44,13 +44,27 @@ header {
     width: 100%;
     display: flex;
     justify-content: space-between;
+    align-items: flex-start;
+}
+
+.logo-container {
+    display: flex;
     align-items: center;
+}
+
+.logo {
+    height: 80px;
+    /* Adjust based on logo aspect ratio */
+    width: auto;
+    object-fit: contain;
 }
 
 h1 {
     font-weight: 600;
     font-size: 1.5rem;
     letter-spacing: -0.025em;
+    display: none;
+    /* Hide H1 as we have logo now */
 }
 
 .icon-button {
@@ -73,11 +87,12 @@ h1 {
 /* Timer Display with Ring */
 .timer-display-container {
     position: relative;
-    width: 300px;
-    height: 300px;
+    width: 500px;
+    height: 500px;
     display: flex;
     justify-content: center;
     align-items: center;
+    margin: 2rem 0;
 }
 
 .progress-ring {
@@ -90,11 +105,12 @@ h1 {
 
 .progress-ring__circle {
     stroke: var(--ring-active);
-    stroke-dasharray: 880; /* 2 * PI * 140 */
+    stroke-dasharray: 1445;
+    /* 2 * PI * 230 */
     stroke-dashoffset: 0;
     transition: stroke-dashoffset 0.1s linear;
     stroke-linecap: round;
-    filter: drop-shadow(0 0 4px var(--primary-color));
+    filter: drop-shadow(0 0 6px var(--primary-color));
 }
 
 .timer-display {
@@ -104,11 +120,11 @@ h1 {
 
 .time-text {
     font-family: var(--font-mono);
-    font-size: 3.5rem;
+    font-size: 6rem;
     font-weight: 700;
     line-height: 1;
     letter-spacing: -0.05em;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .status-text {
@@ -124,7 +140,8 @@ h1 {
     width: 100%;
     display: flex;
     justify-content: center;
-    margin-top: -1rem; /* pull up closer to display when visible */
+    margin-top: -1rem;
+    /* pull up closer to display when visible */
 }
 
 .time-inputs {
@@ -162,6 +179,7 @@ h1 {
 .input-group input::-webkit-outer-spin-button,
 .input-group input::-webkit-inner-spin-button {
     -webkit-appearance: none;
+    appearance: none;
     margin: 0;
 }
 
@@ -175,7 +193,8 @@ h1 {
     font-size: 1.5rem;
     font-weight: 700;
     color: #64748b;
-    margin-bottom: 1.25rem; /* align correctly with nums */
+    margin-bottom: 1.25rem;
+    /* align correctly with nums */
 }
 
 /* Presets */
@@ -279,6 +298,7 @@ h1 {
 
 #volume-slider {
     -webkit-appearance: none;
+    appearance: none;
     width: 100px;
     height: 4px;
     border-radius: 2px;
@@ -288,6 +308,7 @@ h1 {
 
 #volume-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
+    appearance: none;
     appearance: none;
     width: 12px;
     height: 12px;
@@ -308,13 +329,14 @@ footer {
         width: 250px;
         height: 250px;
     }
-    
+
     .progress-ring {
         width: 250px;
         height: 250px;
     }
-    
-    .progress-ring__circle, .progress-ring__circle-bg {
+
+    .progress-ring__circle,
+    .progress-ring__circle-bg {
         r: 115;
         cx: 125;
         cy: 125;
