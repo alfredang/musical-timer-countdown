@@ -1,6 +1,6 @@
-# Modern Countdown Timer
+# Class Break Timer
 
-A sleek, modern countdown timer built with vanilla HTML, CSS, and JS.
+A sleek, modern countdown timer built with vanilla HTML, CSS, and JS. Designed for classrooms, study sessions, and productivity.
 
 ![App Preview](assets/preview.png)
 
@@ -9,11 +9,12 @@ A sleek, modern countdown timer built with vanilla HTML, CSS, and JS.
 
 ## ✨ Features
 
-- **Minimalist Design**: Clean, dark-themed UI with a circular progress indicator.
+- **Minimalist Design**: Clean, dark-themed UI with a centered circular progress indicator.
+- **Mobile Optimized**: Fully responsive layout that looks great on all devices.
 - **Smart Presets**: Quick-start buttons for 15m, 30m, 1h, and 1h 30m.
+- **Manual Input**: Custom time entry with robust reset logic.
 - **Visual Feedback**: Smooth transitions and animations for timer states.
 - **Sound Alerts**: Audio feedback for buttons and timer completion.
-- **Responsive**: Fully functional on desktop, tablet, and mobile devices.
 
 ## 🛠️ Technologies
 - **HTML5**: Semantic structure.
