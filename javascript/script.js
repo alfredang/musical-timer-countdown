@@ -152,7 +152,8 @@ class Timer {
 
         // Sound
         this.volumeSlider.addEventListener('input', (e) => {
-            this.volume = e.target.value;
+            this.volume = parseFloat(e.target.value);
+            this.applyVolumeToAudio();
             this.playSound('click'); // Feedback
         });
 
@@ -620,6 +621,22 @@ class Timer {
         audio.volume = this.volume;
         audio.currentTime = 0;
         audio.play().catch(() => {});
+    }
+
+    applyVolumeToAudio() {
+        if (this.sounds) {
+            Object.values(this.sounds).forEach(audio => {
+                try { audio.volume = this.volume; } catch (e) {}
+            });
+        }
+
+        if (this.activeAudio) {
+            try { this.activeAudio.volume = this.volume; } catch (e) {}
+        }
+
+        if (this.previewAudio) {
+            try { this.previewAudio.volume = this.volume; } catch (e) {}
+        }
     }
 
     playBarkSound(ctx) {
