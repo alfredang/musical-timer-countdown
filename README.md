@@ -1,33 +1,109 @@
 # Class Break Timer
 
-A sleek, modern countdown timer built with vanilla HTML, CSS, and JS. Designed for classrooms, study sessions, and productivity.
+A sleek, modern countdown timer built with vanilla HTML, CSS, and JavaScript. Designed for classrooms, study sessions, and productivity breaks.
 
 ![App Preview](assets/preview.png)
 
-## 🔗 Demo
+## Demo
+
 [**Live Demo**](https://alfredang.github.io/timer-countdown/)
 
-## ✨ Features
+## Features
 
-- **Minimalist Design**: Clean, dark-themed UI with a centered circular progress indicator.
-- **Mobile Optimized**: Fully responsive layout that looks great on all devices.
-- **Smart Presets**: Quick-start buttons for 15m, 30m, 1h, and 1h 30m.
-- **Manual Input**: Custom time entry with robust reset logic.
-- **Visual Feedback**: Smooth transitions and animations for timer states.
-- **Sound Alerts**: Audio feedback for buttons and timer completion.
+### Timer Functionality
+- **Preset Times**: Quick-start buttons for 15m, 30m, 45m, 1h, 1h 15m, and 1h 30m
+- **Manual Input**: Enter custom hours, minutes, and seconds
+- **Accurate Timing**: Uses `Date.now()` for drift-free countdown accuracy
+- **Visual Progress Ring**: Animated circular progress indicator shows remaining time
+- **Pause & Resume**: Pause the timer and resume from where you left off
+- **Reset**: Always-available reset button clears the timer back to 00:00:00
 
-## 🛠️ Technologies
-- **HTML5**: Semantic structure.
-- **CSS3**: Modern Flexbox/Grid layouts, CSS Variables, and Animations.
-- **JavaScript (ES6+)**: Accurate timing logic using `Date` objects to prevent drift.
+### Sound Alerts
+- **4 Alarm Sounds**: Choose from Bark, Bell, Chime (default), or Alarm
+- **Continuous Alert**: Alarm repeats until manually stopped when timer reaches zero
+- **Volume Control**: Adjustable volume slider from silent to maximum
+- **Mute Toggle**: Quick mute/unmute button
+- **Preview Sound**: Test your selected alarm sound before starting
 
-## 🚀 Getting Started
+### Customization
+- **6 Color Themes**: Default (Blue), Ocean, Forest, Sunset, Purple, and Rose
+- **Settings Persist**: Your sound and theme preferences are saved in localStorage
+- **Mobile Responsive**: Fully optimized for all screen sizes
+
+## How to Use
+
+### Setting a Timer
+1. **Using Presets**: Click any preset button (15m, 30m, 45m, 1h, 1h 15m, 1h 30m)
+2. **Manual Entry**: Type your desired time in the HR:MIN:SEC input fields
+
+### Timer Controls
+- **Start**: Begins the countdown
+- **Pause**: Pauses the timer (button changes to "Resume")
+- **Reset**: Clears the timer and all inputs back to 00:00:00
+
+### When Timer Completes
+- The display shows "Time's Up!" with a flashing animation
+- Your selected alarm sound plays continuously
+- Click **Stop Alarm** to silence the alarm and reset
+
+### Customizing Settings
+1. Click the **gear icon** (top right) to open Settings
+2. **Alarm Sound**: Select your preferred sound and click "Preview Sound" to test
+3. **Color Theme**: Choose from 6 beautiful color schemes
+4. Settings are automatically saved
+
+## Project Structure
+
+```
+timer-countdown/
+├── index.html          # Main HTML structure
+├── css/
+│   └── style.css       # Styling, themes, and responsive design
+├── javascript/
+│   └── script.js       # Timer logic and audio synthesis
+├── assets/
+│   ├── preview.png     # Preview image for README
+│   └── sounds/         # Optional audio files (falls back to Web Audio API)
+└── README.md
+```
+
+## Technologies
+
+- **HTML5**: Semantic markup with SVG progress ring
+- **CSS3**: CSS Variables for theming, Flexbox/Grid layouts, animations
+- **JavaScript (ES6+)**: Class-based architecture, Web Audio API for sound synthesis
+- **No Dependencies**: Pure vanilla implementation, no frameworks required
+
+## Browser Support
+
+Works on all modern browsers that support:
+- CSS Custom Properties (CSS Variables)
+- Web Audio API
+- ES6+ JavaScript features
+
+## Getting Started
 
 1. Clone the repository:
    ```bash
    git clone https://github.com/alfredang/timer-countdown.git
    ```
-2. Open `index.html` in your browser.
+2. Open `index.html` in your browser
+3. No build process or server required!
 
-## 🔊 Sound
-To enable sounds, ensure you have `click.mp3`, `start.mp3`, and `alarm.mp3` in the `assets/sounds/` directory. The app falls back to browser-generated beeps if files are missing.
+## Sound System
+
+The app uses the **Web Audio API** to synthesize all alarm sounds:
+- **Bark**: Realistic dog bark using noise + formant filters
+- **Bell**: Rich harmonics simulating a resonant bell
+- **Chime**: Descending wind chime melody
+- **Alarm**: Urgent two-tone emergency alert
+
+Optional: Add `click.mp3`, `start.mp3`, and `alarm.mp3` to `assets/sounds/` for custom UI sounds.
+
+## License
+
+MIT License - Feel free to use and modify for your own projects.
+
+---
+
+Powered by **Tertiary Infotech Academy Pte Ltd**
