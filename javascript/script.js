@@ -71,8 +71,8 @@ class Timer {
     }
 
     loadSettings() {
-        const savedSound = localStorage.getItem('timerSound');
-        const savedTheme = localStorage.getItem('timerTheme');
+        const savedSound = this.safeStorageGet('timerSound');
+        const savedTheme = this.safeStorageGet('timerTheme');
 
         if (savedSound) {
             this.selectedSound = savedSound;
@@ -99,8 +99,24 @@ class Timer {
     }
 
     saveSettings() {
-        localStorage.setItem('timerSound', this.selectedSound);
-        localStorage.setItem('timerTheme', this.selectedTheme);
+        this.safeStorageSet('timerSound', this.selectedSound);
+        this.safeStorageSet('timerTheme', this.selectedTheme);
+    }
+
+    safeStorageGet(key) {
+        try {
+            return localStorage.getItem(key);
+        } catch (err) {
+            return null;
+        }
+    }
+
+    safeStorageSet(key, value) {
+        try {
+            localStorage.setItem(key, value);
+        } catch (err) {
+            // Storage unavailable (e.g., file:// sandbox); silently ignore.
+        }
     }
 
     setupRing() {
