@@ -421,7 +421,7 @@ class Timer {
             click: new Audio('assets/sounds/click.mp3'),
             start: new Audio('assets/sounds/start.mp3'),
             alarm: new Audio('assets/sounds/alarm.mp3'),
-            bark: new Audio('assets/sounds/bark.mp3')
+            bark: new Audio('assets/sounds/Portugal de Maria Luiza 2.mp3')
         };
 
         // Error handling for missing files (so code doesn't break)
