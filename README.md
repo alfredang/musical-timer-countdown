@@ -1,6 +1,6 @@
 # Modern Countdown Timer
 
-A sleek, modern countdown timer inspired by [vClock](https://vclock.com/), built with vanilla HTML, CSS, and CDD.
+A sleek, modern countdown timer built with vanilla HTML, CSS, and JS.
 
 ![App Preview](assets/preview.png)
 

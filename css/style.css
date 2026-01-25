@@ -44,27 +44,13 @@ header {
     width: 100%;
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-}
-
-.logo-container {
-    display: flex;
     align-items: center;
-}
-
-.logo {
-    height: 80px;
-    /* Adjust based on logo aspect ratio */
-    width: auto;
-    object-fit: contain;
 }
 
 h1 {
     font-weight: 600;
     font-size: 1.5rem;
     letter-spacing: -0.025em;
-    display: none;
-    /* Hide H1 as we have logo now */
 }
 
 .icon-button {
