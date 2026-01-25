@@ -42,10 +42,15 @@ class Timer {
         this.audioCtx = null; // For simple beep if files missing, or we use Audio
         this.volume = 0.3;
         this.isMuted = false;
-        this.selectedSound = 'chime';
+        this.selectedSound = 'beep';
         this.selectedTheme = 'default';
         this.alarmInterval = null;
         this.isAlarming = false;
+        // Preview controls
+        this.previewing = false;
+        this.previewCtx = null;
+        this.previewAudio = null;
+        this.previewTimeouts = [];
 
         // Init
         this.init();
@@ -161,7 +166,40 @@ class Timer {
         });
 
         // Preview Sound
-        this.previewSoundBtn.addEventListener('click', () => this.playAlarmSound());
+        this.previewSoundBtn.addEventListener('click', () => this.togglePreview());
+    }
+
+    togglePreview() {
+        if (this.previewing) {
+            this.stopPreview();
+        } else {
+            this.previewing = true;
+            this.previewTimeouts = [];
+            this.playAlarmSound(true);
+            this.previewSoundBtn.textContent = 'Stop Preview';
+        }
+    }
+
+    stopPreview() {
+        this.previewing = false;
+        // Stop any playing audio element
+        if (this.previewAudio) {
+            try {
+                this.previewAudio.pause();
+                this.previewAudio.currentTime = 0;
+            } catch (e) {}
+            this.previewAudio = null;
+        }
+
+        // Clear timeouts and close audio context
+        this.previewTimeouts.forEach(id => clearTimeout(id));
+        this.previewTimeouts = [];
+        if (this.previewCtx) {
+            try { this.previewCtx.close(); } catch (e) {}
+            this.previewCtx = null;
+        }
+
+        this.previewSoundBtn.textContent = 'Preview Sound';
     }
 
     openSettings() {
@@ -451,31 +489,53 @@ class Timer {
     playAlarmSound() {
         if (this.isMuted) return;
 
+        // preview flag if provided as first argument
+        const isPreview = arguments[0] === true;
+
+        // For preview control we keep references to audio/context/timeouts
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
 
         switch (this.selectedSound) {
             case 'bell':
+                if (isPreview) this.previewCtx = ctx;
                 this.playBellSound(ctx);
                 break;
             case 'chime':
+                if (isPreview) this.previewCtx = ctx;
                 this.playChimeSound(ctx);
                 break;
             case 'alarm':
+                if (isPreview) this.previewCtx = ctx;
                 this.playUrgentAlarm(ctx);
                 break;
             default:
-                this.playBarkSound(ctx);
+                // Default maps to the 'bark' audio/synth
+                const barkAudio = this.sounds.bark;
+                if (barkAudio && !barkAudio.dataset.missing) {
+                    // Play the file directly (don't need ctx)
+                    if (isPreview) {
+                        this.previewAudio = barkAudio;
+                        barkAudio.volume = this.volume;
+                        barkAudio.currentTime = 0;
+                        barkAudio.play().catch(e => console.log('Audio play failed', e));
+                        barkAudio.onended = () => { if (this.previewing) this.stopPreview(); };
+                    } else {
+                        barkAudio.volume = this.volume;
+                        barkAudio.currentTime = 0;
+                        barkAudio.play().catch(e => console.log('Bark audio failed', e));
+                    }
+                } else {
+                    if (isPreview) this.previewCtx = ctx;
+                    this.playBarkSound(ctx);
+                }
         }
     }
 
     playBarkSound(ctx) {
-        // Try to play bark audio file first
+        // Try to play bark audio file first (synth fallback if missing)
         const barkAudio = this.sounds.bark;
         if (barkAudio && !barkAudio.dataset.missing) {
-            ctx.close(); // Close unused context
-            barkAudio.volume = this.volume;
-            barkAudio.currentTime = 0;
-            barkAudio.play().catch(e => console.log('Bark audio failed', e));
+            // When file exists the caller handles playing (so just return)
             return;
         }
 
@@ -542,7 +602,11 @@ class Timer {
             time += 0.35;
         }
 
-        setTimeout(() => ctx.close(), 1800);
+        const t = setTimeout(() => {
+            try { ctx.close(); } catch (e) {}
+            if (this.previewing) this.stopPreview();
+        }, 1800);
+        if (this.previewing) this.previewTimeouts.push(t);
     }
 
     playBellSound(ctx) {
@@ -568,7 +632,11 @@ class Timer {
             osc.stop(time + 1.5);
         });
 
-        setTimeout(() => ctx.close(), 2000);
+        const t = setTimeout(() => {
+            try { ctx.close(); } catch (e) {}
+            if (this.previewing) this.stopPreview();
+        }, 2000);
+        if (this.previewing) this.previewTimeouts.push(t);
     }
 
     playChimeSound(ctx) {
@@ -593,7 +661,11 @@ class Timer {
             time += 0.12;
         });
 
-        setTimeout(() => ctx.close(), 1500);
+        const t = setTimeout(() => {
+            try { ctx.close(); } catch (e) {}
+            if (this.previewing) this.stopPreview();
+        }, 1500);
+        if (this.previewing) this.previewTimeouts.push(t);
     }
 
     playUrgentAlarm(ctx) {
@@ -624,7 +696,11 @@ class Timer {
             osc2.stop(startTime + 0.24);
         }
 
-        setTimeout(() => ctx.close(), 1500);
+        const t = setTimeout(() => {
+            try { ctx.close(); } catch (e) {}
+            if (this.previewing) this.stopPreview();
+        }, 1500);
+        if (this.previewing) this.previewTimeouts.push(t);
     }
 
     toggleMute() {
