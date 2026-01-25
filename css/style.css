@@ -1,0 +1,331 @@
+:root {
+    --bg-color: #0f172a;
+    --text-color: #f8fafc;
+    --primary-color: #3b82f6;
+    --secondary-color: #1e293b;
+    --accent-color: #60a5fa;
+    --danger-color: #ef4444;
+    --ring-bg: #1e293b;
+    --ring-active: #3b82f6;
+    --font-main: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-glow: 0 0 15px rgba(59, 130, 246, 0.5);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-main);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.app-container {
+    width: 100%;
+    max-width: 600px;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+}
+
+header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+h1 {
+    font-weight: 600;
+    font-size: 1.5rem;
+    letter-spacing: -0.025em;
+}
+
+.icon-button {
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Timer Display with Ring */
+.timer-display-container {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.progress-ring {
+    transform: rotate(-90deg);
+}
+
+.progress-ring__circle-bg {
+    stroke: var(--ring-bg);
+}
+
+.progress-ring__circle {
+    stroke: var(--ring-active);
+    stroke-dasharray: 880; /* 2 * PI * 140 */
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset 0.1s linear;
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 4px var(--primary-color));
+}
+
+.timer-display {
+    position: absolute;
+    text-align: center;
+}
+
+.time-text {
+    font-family: var(--font-mono);
+    font-size: 3.5rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.05em;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+.status-text {
+    margin-top: 0.5rem;
+    font-size: 1rem;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+/* Inputs */
+.input-section {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: -1rem; /* pull up closer to display when visible */
+}
+
+.time-inputs {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--secondary-color);
+    padding: 1rem;
+    border-radius: 1rem;
+    box-shadow: var(--shadow-soft);
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.input-group input {
+    background: transparent;
+    border: none;
+    color: var(--text-color);
+    font-family: var(--font-mono);
+    font-size: 1.5rem;
+    width: 2.5ch;
+    text-align: center;
+    outline: none;
+}
+
+.input-group input:focus {
+    color: var(--primary-color);
+}
+
+/* Remove arrows from number input */
+.input-group input::-webkit-outer-spin-button,
+.input-group input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.input-group label {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin-top: 0.25rem;
+}
+
+.separator {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #64748b;
+    margin-bottom: 1.25rem; /* align correctly with nums */
+}
+
+/* Presets */
+.presets {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    width: 100%;
+}
+
+.preset-btn {
+    background: var(--secondary-color);
+    border: 1px solid transparent;
+    color: var(--text-color);
+    padding: 0.75rem 1.25rem;
+    border-radius: 9999px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.preset-btn:hover {
+    background: #334155;
+    transform: translateY(-1px);
+}
+
+.preset-btn.active {
+    background: var(--primary-color);
+    color: white;
+    box-shadow: var(--shadow-glow);
+}
+
+/* Controls */
+.controls {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.control-btn {
+    padding: 0.75rem 2rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    font-size: 1.125rem;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    min-width: 100px;
+}
+
+.control-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.control-btn.primary {
+    background: var(--primary-color);
+    color: white;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.control-btn.primary:hover:not(:disabled) {
+    background: #2563eb;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+}
+
+.control-btn.secondary {
+    background: var(--secondary-color);
+    color: var(--text-color);
+}
+
+.control-btn.secondary:hover:not(:disabled) {
+    background: #334155;
+}
+
+.control-btn.destr {
+    background: transparent;
+    color: #94a3b8;
+    border: 1px solid #334155;
+}
+
+.control-btn.destr:hover:not(:disabled) {
+    color: var(--danger-color);
+    border-color: var(--danger-color);
+    background: rgba(239, 68, 68, 0.1);
+}
+
+/* Sound Controls */
+.sound-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: rgba(30, 41, 59, 0.5);
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    margin-top: 1rem;
+}
+
+#volume-slider {
+    -webkit-appearance: none;
+    width: 100px;
+    height: 4px;
+    border-radius: 2px;
+    background: #475569;
+    outline: none;
+}
+
+#volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--text-color);
+    cursor: pointer;
+}
+
+footer {
+    margin-top: auto;
+    font-size: 0.875rem;
+    color: #64748b;
+}
+
+/* Mobile Responsive */
+@media (max-width: 600px) {
+    .timer-display-container {
+        width: 250px;
+        height: 250px;
+    }
+    
+    .progress-ring {
+        width: 250px;
+        height: 250px;
+    }
+    
+    .progress-ring__circle, .progress-ring__circle-bg {
+        r: 115;
+        cx: 125;
+        cy: 125;
+    }
+
+    .time-text {
+        font-size: 2.75rem;
+    }
+
+    .controls {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}

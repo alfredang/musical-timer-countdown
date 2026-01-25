@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Countdown Timer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1>Timer</h1>
+            <button id="theme-toggle" class="icon-button" aria-label="Toggle Theme">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-moon"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+            </button>
+        </header>
+
+        <main>
+            <!-- Progress Ring -->
+            <div class="timer-display-container">
+                <svg class="progress-ring" width="300" height="300">
+                    <circle class="progress-ring__circle-bg" stroke="currentColor" stroke-width="8" fill="transparent" r="140" cx="150" cy="150" />
+                    <circle class="progress-ring__circle" stroke="currentColor" stroke-width="8" fill="transparent" r="140" cx="150" cy="150" />
+                </svg>
+                <div class="timer-display">
+                    <div id="time-display" class="time-text">00:00:00</div>
+                    <div id="timer-status" class="status-text">Ready</div>
+                </div>
+            </div>
+
+            <!-- Manual Input (Hidden when running) -->
+            <div class="input-section" id="input-section">
+                <div class="time-inputs">
+                    <div class="input-group">
+                        <input type="number" id="input-hours" min="0" max="99" placeholder="00" value="00">
+                        <label>HR</label>
+                    </div>
+                    <div class="separator">:</div>
+                    <div class="input-group">
+                        <input type="number" id="input-minutes" min="0" max="59" placeholder="00" value="00">
+                        <label>MIN</label>
+                    </div>
+                    <div class="separator">:</div>
+                    <div class="input-group">
+                        <input type="number" id="input-seconds" min="0" max="59" placeholder="00" value="00">
+                        <label>SEC</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Presets -->
+            <div class="presets">
+                <button class="preset-btn" data-time="900">15m</button>
+                <button class="preset-btn" data-time="1800">30m</button>
+                <button class="preset-btn" data-time="3600">1h</button>
+                <button class="preset-btn" data-time="5400">1h 30m</button>
+            </div>
+
+            <!-- Controls -->
+            <div class="controls">
+                <button id="start-btn" class="control-btn primary">Start</button>
+                <button id="pause-btn" class="control-btn secondary" disabled>Pause</button>
+                <button id="reset-btn" class="control-btn destr" disabled>Reset</button>
+            </div>
+            
+            <!-- Sound Settings -->
+            <div class="sound-controls">
+                <button id="mute-btn" class="icon-button" aria-label="Toggle Mute">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                </button>
+                <input type="range" id="volume-slider" min="0" max="1" step="0.1" value="0.5">
+            </div>
+        </main>
+
+        <footer>
+            <p>Modern Timer</p>
+        </footer>
+    </div>
+
+    <script src="javascript/script.js"></script>
+</body>
+</html>
