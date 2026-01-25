@@ -19,6 +19,14 @@ class Timer {
         this.volumeSlider = document.getElementById('volume-slider');
         this.muteBtn = document.getElementById('mute-btn');
 
+        // Settings Elements
+        this.settingsBtn = document.getElementById('settings-btn');
+        this.settingsModal = document.getElementById('settings-modal');
+        this.closeSettingsBtn = document.getElementById('close-settings');
+        this.soundOptions = document.querySelectorAll('.sound-option');
+        this.themeOptions = document.querySelectorAll('.theme-option');
+        this.previewSoundBtn = document.getElementById('preview-sound');
+
         // Constants (Radius from SVG)
         this.radius = this.progressRing.r.baseVal.value;
         this.circumference = 2 * Math.PI * this.radius;
@@ -31,18 +39,53 @@ class Timer {
         this.isPaused = false;
         this.endTime = null;
         this.audioCtx = null; // For simple beep if files missing, or we use Audio
-        this.volume = 0.5;
+        this.volume = 0.3;
         this.isMuted = false;
+        this.selectedSound = 'beep';
+        this.selectedTheme = 'default';
+        this.alarmInterval = null;
+        this.isAlarming = false;
 
         // Init
         this.init();
     }
 
     init() {
+        this.loadSettings();
         this.setupRing();
         this.addEventListeners();
         this.updateDisplay(0);
         this.loadAudio();
+        // Sync volume with slider default
+        this.volume = parseFloat(this.volumeSlider.value);
+    }
+
+    loadSettings() {
+        const savedSound = localStorage.getItem('timerSound');
+        const savedTheme = localStorage.getItem('timerTheme');
+
+        if (savedSound) {
+            this.selectedSound = savedSound;
+            this.soundOptions.forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.sound === savedSound);
+            });
+        }
+
+        if (savedTheme) {
+            this.selectedTheme = savedTheme;
+            document.body.setAttribute('data-theme', savedTheme === 'default' ? '' : savedTheme);
+            if (savedTheme === 'default') {
+                document.body.removeAttribute('data-theme');
+            }
+            this.themeOptions.forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.theme === savedTheme);
+            });
+        }
+    }
+
+    saveSettings() {
+        localStorage.setItem('timerSound', this.selectedSound);
+        localStorage.setItem('timerTheme', this.selectedTheme);
     }
 
     setupRing() {
@@ -82,6 +125,49 @@ class Timer {
         });
 
         this.muteBtn.addEventListener('click', () => this.toggleMute());
+
+        // Settings Modal
+        this.settingsBtn.addEventListener('click', () => this.openSettings());
+        this.closeSettingsBtn.addEventListener('click', () => this.closeSettings());
+        this.settingsModal.addEventListener('click', (e) => {
+            if (e.target === this.settingsModal) this.closeSettings();
+        });
+
+        // Sound Options
+        this.soundOptions.forEach(btn => {
+            btn.addEventListener('click', () => {
+                this.soundOptions.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                this.selectedSound = btn.dataset.sound;
+                this.saveSettings();
+            });
+        });
+
+        // Theme Options
+        this.themeOptions.forEach(btn => {
+            btn.addEventListener('click', () => {
+                this.themeOptions.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                this.selectedTheme = btn.dataset.theme;
+                if (this.selectedTheme === 'default') {
+                    document.body.removeAttribute('data-theme');
+                } else {
+                    document.body.setAttribute('data-theme', this.selectedTheme);
+                }
+                this.saveSettings();
+            });
+        });
+
+        // Preview Sound
+        this.previewSoundBtn.addEventListener('click', () => this.playAlarmSound());
+    }
+
+    openSettings() {
+        this.settingsModal.classList.add('open');
+    }
+
+    closeSettings() {
+        this.settingsModal.classList.remove('open');
     }
 
     handleInputChange() {
@@ -91,6 +177,10 @@ class Timer {
 
         const total = (h * 3600) + (m * 60) + s;
         this.updateDisplay(total, true); // True to not updating ring yet
+
+        // Reset internal state so start() reads from inputs
+        this.totalSeconds = 0;
+        this.remainingSeconds = 0;
 
         // Deselect presets
         this.presetBtns.forEach(b => b.classList.remove('active'));
@@ -141,6 +231,8 @@ class Timer {
     }
 
     start() {
+        this.stopAlarm();
+
         // Get time from inputs if not set via preset (or edited)
         if (this.remainingSeconds === 0 && !this.isPaused) {
             const h = parseInt(this.inputInputs.h.value) || 0;
@@ -189,16 +281,12 @@ class Timer {
         this.isRunning = false;
         this.isPaused = false;
         clearInterval(this.interval);
+        this.stopAlarm();
 
-        this.remainingSeconds = this.totalSeconds; // Reset to start value or 0? 
-        // Typically reset goes to initial state
+        this.remainingSeconds = this.totalSeconds;
 
         this.updateDisplay(this.remainingSeconds);
         this.updateUIState('idle');
-        this.setProgress(0); // Full ring or empty? Let's say full ring means "full time left" 
-        // Actually normally countdown rings start full and empty out.
-        // My logic in setProgress: offset = circumference - (percent/100)*circumference
-        // percent = (remaining / total) * 100
         this.setProgress(100);
     }
 
@@ -210,7 +298,29 @@ class Timer {
         clearInterval(this.interval);
 
         this.updateUIState('complete');
-        this.playSound('alarm');
+        this.startContinuousAlarm();
+    }
+
+    startContinuousAlarm() {
+        if (this.isMuted) return;
+
+        this.isAlarming = true;
+        this.playAlarmSound();
+
+        // Repeat alarm every 2 seconds
+        this.alarmInterval = setInterval(() => {
+            if (this.isAlarming && !this.isMuted) {
+                this.playAlarmSound();
+            }
+        }, 2000);
+    }
+
+    stopAlarm() {
+        this.isAlarming = false;
+        if (this.alarmInterval) {
+            clearInterval(this.alarmInterval);
+            this.alarmInterval = null;
+        }
     }
 
     updateDisplay(seconds, isPreview = false) {
@@ -220,7 +330,7 @@ class Timer {
 
         const str = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
         this.timeDisplay.textContent = str;
-        document.title = `${str} - Timer`;
+        document.title = `${str} - Class Break Timer`;
 
         // Ring progress
         if (this.totalSeconds > 0 && !isPreview) {
@@ -292,14 +402,55 @@ class Timer {
         if (sound) {
             sound.volume = this.volume;
             if (sound.dataset.missing) {
-                // Fallbackbeep
+                // Fallback beep
                 this.beep(name === 'alarm' ? 440 : 880, name === 'alarm' ? 1000 : 100);
             } else {
                 sound.currentTime = 0;
                 sound.play().catch(e => console.log('Audio play failed', e));
-                // simple fallback if interaction policy blocks
             }
         }
+    }
+
+    playAlarmSound() {
+        if (this.isMuted) return;
+
+        // Different synthesized sounds based on selection
+        const soundConfigs = {
+            beep: { freq: 440, duration: 800, pattern: [1] },
+            bell: { freq: 880, duration: 600, pattern: [1, 0.5, 1] },
+            chime: { freq: 660, duration: 400, pattern: [1, 0.8, 0.6, 0.4] },
+            alarm: { freq: 520, duration: 200, pattern: [1, 1, 1, 1, 1, 1] }
+        };
+
+        const config = soundConfigs[this.selectedSound] || soundConfigs.beep;
+        this.playPatternedSound(config.freq, config.duration, config.pattern);
+    }
+
+    playPatternedSound(baseFreq, duration, pattern) {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        let time = ctx.currentTime;
+
+        pattern.forEach((multiplier) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+
+            osc.frequency.value = baseFreq * multiplier;
+            osc.type = this.selectedSound === 'bell' ? 'sine' :
+                       this.selectedSound === 'chime' ? 'triangle' : 'square';
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            gain.gain.setValueAtTime(this.volume * 0.15, time);
+            gain.gain.exponentialRampToValueAtTime(0.001, time + duration / 1000);
+
+            osc.start(time);
+            osc.stop(time + duration / 1000);
+
+            time += (duration / 1000) + 0.05;
+        });
+
+        setTimeout(() => ctx.close(), pattern.length * (duration + 50) + 100);
     }
 
     toggleMute() {

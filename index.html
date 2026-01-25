@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modern Countdown Timer</title>
+    <title>Class Break Timer</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -17,19 +17,76 @@
     <div class="app-container">
         <header>
             <h1>Class Break Timer</h1>
-            <button id="theme-toggle" class="icon-button" aria-label="Toggle Theme">
+            <button id="settings-btn" class="icon-button" aria-label="Settings">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                    class="feather feather-moon">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
                 </svg>
             </button>
         </header>
 
+        <!-- Settings Modal -->
+        <div id="settings-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Settings</h2>
+                    <button id="close-settings" class="icon-button" aria-label="Close">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Alarm Sound</h3>
+                    <div class="sound-options">
+                        <button class="sound-option active" data-sound="beep">Beep</button>
+                        <button class="sound-option" data-sound="bell">Bell</button>
+                        <button class="sound-option" data-sound="chime">Chime</button>
+                        <button class="sound-option" data-sound="alarm">Alarm</button>
+                    </div>
+                    <button id="preview-sound" class="preview-btn">Preview Sound</button>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Color Theme</h3>
+                    <div class="theme-options">
+                        <button class="theme-option active" data-theme="default" style="--preview-bg: #0f172a; --preview-accent: #3b82f6;">
+                            <span class="theme-preview"></span>
+                            <span>Default</span>
+                        </button>
+                        <button class="theme-option" data-theme="ocean" style="--preview-bg: #0c4a6e; --preview-accent: #06b6d4;">
+                            <span class="theme-preview"></span>
+                            <span>Ocean</span>
+                        </button>
+                        <button class="theme-option" data-theme="forest" style="--preview-bg: #14532d; --preview-accent: #22c55e;">
+                            <span class="theme-preview"></span>
+                            <span>Forest</span>
+                        </button>
+                        <button class="theme-option" data-theme="sunset" style="--preview-bg: #431407; --preview-accent: #f97316;">
+                            <span class="theme-preview"></span>
+                            <span>Sunset</span>
+                        </button>
+                        <button class="theme-option" data-theme="purple" style="--preview-bg: #2e1065; --preview-accent: #a855f7;">
+                            <span class="theme-preview"></span>
+                            <span>Purple</span>
+                        </button>
+                        <button class="theme-option" data-theme="rose" style="--preview-bg: #4c0519; --preview-accent: #f43f5e;">
+                            <span class="theme-preview"></span>
+                            <span>Rose</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <main>
             <!-- Progress Ring -->
             <div class="timer-display-container">
-                <svg class="progress-ring" width="500" height="500">
+                <svg class="progress-ring" viewBox="0 0 500 500">
                     <circle class="progress-ring__circle-bg" stroke="currentColor" stroke-width="12" fill="transparent"
                         r="230" cx="250" cy="250" />
                     <circle class="progress-ring__circle" stroke="currentColor" stroke-width="12" fill="transparent"
@@ -65,7 +122,9 @@
             <div class="presets">
                 <button class="preset-btn" data-time="900">15m</button>
                 <button class="preset-btn" data-time="1800">30m</button>
+                <button class="preset-btn" data-time="2700">45m</button>
                 <button class="preset-btn" data-time="3600">1h</button>
+                <button class="preset-btn" data-time="4500">1h 15m</button>
                 <button class="preset-btn" data-time="5400">1h 30m</button>
             </div>
 
@@ -85,7 +144,7 @@
                         <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
                     </svg>
                 </button>
-                <input type="range" id="volume-slider" min="0" max="1" step="0.1" value="0.5">
+                <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.3">
             </div>
         </main>
 
