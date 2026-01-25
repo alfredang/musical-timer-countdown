@@ -82,6 +82,7 @@ h1 {
     /* Take out of flow to prevent pushing H1 */
     right: 0;
     /* Position on the right */
+    z-index: 1100;
 }
 
 .icon-button:hover {
