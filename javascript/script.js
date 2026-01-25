@@ -51,6 +51,10 @@ class Timer {
         this.previewCtx = null;
         this.previewAudio = null;
         this.previewTimeouts = [];
+        // Active playback trackers (so stopAlarm can cancel everything)
+        this.activeContexts = [];
+        this.activeTimeouts = [];
+        this.activeAudio = null;
 
         // Init
         this.init();
@@ -392,6 +396,28 @@ class Timer {
         }
         this.stopAlarmBtn.classList.add('hidden');
         this.timerStatus.classList.remove('complete');
+        // Pause/rewind any HTMLAudio elements
+        if (this.sounds) {
+            Object.values(this.sounds).forEach(a => {
+                try { a.pause(); a.currentTime = 0; } catch (e) {}
+            });
+        }
+
+        // Stop any active audio that was started by playAlarmSound
+        if (this.activeAudio) {
+            try { this.activeAudio.pause(); this.activeAudio.currentTime = 0; } catch (e) {}
+            this.activeAudio = null;
+        }
+
+        // Clear scheduled timeouts and close audio contexts
+        this.activeTimeouts.forEach(id => clearTimeout(id));
+        this.activeTimeouts = [];
+        this.activeContexts.forEach(ctx => { try { ctx.close(); } catch (e) {} });
+        this.activeContexts = [];
+
+        // Also stop any preview state
+        if (this.previewing) this.stopPreview();
+        if (this.previewCtx) { try { this.previewCtx.close(); } catch (e) {} this.previewCtx = null; }
     }
 
     stopAlarmAndReset() {
@@ -499,6 +525,8 @@ class Timer {
 
         // For preview control we keep references to audio/context/timeouts
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        // track context so we can close it if alarm is stopped
+        this.activeContexts.push(ctx);
 
         switch (this.selectedSound) {
             case 'bell':
@@ -525,9 +553,12 @@ class Timer {
                         barkAudio.play().catch(e => console.log('Audio play failed', e));
                         barkAudio.onended = () => { if (this.previewing) this.stopPreview(); };
                     } else {
+                        // track the active audio so stopAlarm can stop it
+                        this.activeAudio = barkAudio;
                         barkAudio.volume = this.volume;
                         barkAudio.currentTime = 0;
                         barkAudio.play().catch(e => console.log('Bark audio failed', e));
+                        barkAudio.onended = () => { this.activeAudio = null; };
                     }
                 } else {
                     if (isPreview) this.previewCtx = ctx;
@@ -537,6 +568,8 @@ class Timer {
     }
 
     playBarkSound(ctx) {
+        // track ctx so stopAlarm can close it
+        this.activeContexts.push(ctx);
         // Try to play bark audio file first (synth fallback if missing)
         const barkAudio = this.sounds.bark;
         if (barkAudio && !barkAudio.dataset.missing) {
@@ -611,7 +644,7 @@ class Timer {
             try { ctx.close(); } catch (e) {}
             if (this.previewing) this.stopPreview();
         }, 1800);
-        if (this.previewing) this.previewTimeouts.push(t);
+        this.activeTimeouts.push(t);
     }
 
     playBellSound(ctx) {
@@ -641,7 +674,7 @@ class Timer {
             try { ctx.close(); } catch (e) {}
             if (this.previewing) this.stopPreview();
         }, 2000);
-        if (this.previewing) this.previewTimeouts.push(t);
+        this.activeTimeouts.push(t);
     }
 
     playChimeSound(ctx) {
@@ -670,7 +703,7 @@ class Timer {
             try { ctx.close(); } catch (e) {}
             if (this.previewing) this.stopPreview();
         }, 1500);
-        if (this.previewing) this.previewTimeouts.push(t);
+        this.activeTimeouts.push(t);
     }
 
     playUrgentAlarm(ctx) {
@@ -705,7 +738,7 @@ class Timer {
             try { ctx.close(); } catch (e) {}
             if (this.previewing) this.stopPreview();
         }, 1500);
-        if (this.previewing) this.previewTimeouts.push(t);
+        this.activeTimeouts.push(t);
     }
 
     toggleMute() {
