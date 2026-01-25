@@ -42,7 +42,7 @@ class Timer {
         this.audioCtx = null; // For simple beep if files missing, or we use Audio
         this.volume = 0.3;
         this.isMuted = false;
-        this.selectedSound = 'beep';
+        this.selectedSound = 'chime';
         this.selectedTheme = 'default';
         this.alarmInterval = null;
         this.isAlarming = false;
@@ -178,11 +178,12 @@ class Timer {
         const s = parseInt(this.inputInputs.s.value) || 0;
 
         const total = (h * 3600) + (m * 60) + s;
-        this.updateDisplay(total, true); // True to not updating ring yet
 
-        // Reset internal state so start() reads from inputs
-        this.totalSeconds = 0;
-        this.remainingSeconds = 0;
+        // Update internal state so start() uses the new values
+        this.totalSeconds = total;
+        this.remainingSeconds = total;
+
+        this.updateDisplay(total, true); // True to not updating ring yet
 
         // Deselect presets
         this.presetBtns.forEach(b => b.classList.remove('active'));
@@ -285,11 +286,29 @@ class Timer {
         clearInterval(this.interval);
         this.stopAlarm();
 
+        // Reset to original timer duration
         this.remainingSeconds = this.totalSeconds;
 
         this.updateDisplay(this.remainingSeconds);
+        this.syncInputsToTime(this.totalSeconds);
         this.updateUIState('idle');
         this.setProgress(100);
+    }
+
+    syncInputsToTime(seconds) {
+        const h = Math.floor(seconds / 3600);
+        const m = Math.floor((seconds % 3600) / 60);
+        const s = seconds % 60;
+
+        if (seconds === 0) {
+            this.inputInputs.h.value = '';
+            this.inputInputs.m.value = '';
+            this.inputInputs.s.value = '';
+        } else {
+            this.inputInputs.h.value = h > 0 ? h.toString().padStart(2, '0') : '';
+            this.inputInputs.m.value = (m > 0 || h > 0) ? m.toString().padStart(2, '0') : '';
+            this.inputInputs.s.value = s.toString().padStart(2, '0');
+        }
     }
 
     complete() {
@@ -332,10 +351,11 @@ class Timer {
 
     stopAlarmAndReset() {
         this.stopAlarm();
-        this.updateUIState('idle');
         this.totalSeconds = 0;
         this.remainingSeconds = 0;
         this.updateDisplay(0);
+        this.syncInputsToTime(0);
+        this.updateUIState('idle');
         this.setProgress(100);
     }
 
@@ -443,34 +463,46 @@ class Timer {
                 this.playUrgentAlarm(ctx);
                 break;
             default:
-                this.playMelodyBeep(ctx);
+                this.playBarkSound(ctx);
         }
     }
 
-    playMelodyBeep(ctx) {
-        // Pleasant ascending melody
-        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+    playBarkSound(ctx) {
+        // Dog barking sound synthesized
         let time = ctx.currentTime;
 
-        notes.forEach((freq) => {
+        for (let bark = 0; bark < 3; bark++) {
+            // Each bark consists of noise burst + pitch drop
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
+            const filter = ctx.createBiquadFilter();
 
-            osc.frequency.value = freq;
-            osc.type = 'sine';
-            osc.connect(gain);
+            // Start high, drop quickly (like a bark)
+            osc.frequency.setValueAtTime(600, time);
+            osc.frequency.exponentialRampToValueAtTime(150, time + 0.15);
+            osc.type = 'sawtooth';
+
+            filter.type = 'bandpass';
+            filter.frequency.value = 800;
+            filter.Q.value = 2;
+
+            osc.connect(filter);
+            filter.connect(gain);
             gain.connect(ctx.destination);
 
+            // Sharp attack, quick decay
             gain.gain.setValueAtTime(0, time);
-            gain.gain.linearRampToValueAtTime(this.volume * 0.3, time + 0.05);
-            gain.gain.exponentialRampToValueAtTime(0.001, time + 0.3);
+            gain.gain.linearRampToValueAtTime(this.volume * 0.4, time + 0.02);
+            gain.gain.exponentialRampToValueAtTime(this.volume * 0.2, time + 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.001, time + 0.2);
 
             osc.start(time);
-            osc.stop(time + 0.3);
-            time += 0.15;
-        });
+            osc.stop(time + 0.2);
 
-        setTimeout(() => ctx.close(), 1000);
+            time += 0.3; // Gap between barks
+        }
+
+        setTimeout(() => ctx.close(), 1500);
     }
 
     playBellSound(ctx) {
