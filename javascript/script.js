@@ -286,11 +286,13 @@ class Timer {
         clearInterval(this.interval);
         this.stopAlarm();
 
-        // Reset to original timer duration
-        this.remainingSeconds = this.totalSeconds;
+        // Reset everything to 0
+        this.totalSeconds = 0;
+        this.remainingSeconds = 0;
 
-        this.updateDisplay(this.remainingSeconds);
-        this.syncInputsToTime(this.totalSeconds);
+        this.updateDisplay(0);
+        this.syncInputsToTime(0);
+        this.presetBtns.forEach(b => b.classList.remove('active'));
         this.updateUIState('idle');
         this.setProgress(100);
     }
@@ -382,31 +384,30 @@ class Timer {
         this.inputSection.style.opacity = state === 'running' ? '0.2' : '1';
         this.inputSection.style.pointerEvents = state === 'running' ? 'none' : 'auto';
 
+        // Reset button is always enabled
+        this.resetBtn.disabled = false;
+
         if (state === 'running') {
             this.startBtn.disabled = true;
             this.pauseBtn.disabled = false;
-            this.resetBtn.disabled = false;
             this.timerStatus.textContent = "Running...";
             this.timerStatus.style.color = "#60a5fa";
         } else if (state === 'paused') {
             this.startBtn.textContent = "Resume";
             this.startBtn.disabled = false;
             this.pauseBtn.disabled = true;
-            this.resetBtn.disabled = false;
             this.timerStatus.textContent = "Paused";
             this.timerStatus.style.color = "#fbbf24";
         } else if (state === 'idle') {
             this.startBtn.textContent = "Start";
             this.startBtn.disabled = false;
             this.pauseBtn.disabled = true;
-            this.resetBtn.disabled = true;
             this.timerStatus.textContent = "Ready";
             this.timerStatus.style.color = "#94a3b8";
         } else if (state === 'complete') {
             this.startBtn.textContent = "Start";
             this.startBtn.disabled = false;
             this.pauseBtn.disabled = true;
-            this.resetBtn.disabled = false;
             this.timerStatus.textContent = "Time's Up!";
             this.timerStatus.style.color = "#ef4444";
             document.title = "Time's Up!";
@@ -468,41 +469,77 @@ class Timer {
     }
 
     playBarkSound(ctx) {
-        // Dog barking sound synthesized
+        // More realistic dog bark using noise + formants
         let time = ctx.currentTime;
 
         for (let bark = 0; bark < 3; bark++) {
-            // Each bark consists of noise burst + pitch drop
+            // Create noise source for roughness
+            const bufferSize = ctx.sampleRate * 0.3;
+            const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const output = noiseBuffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                output[i] = Math.random() * 2 - 1;
+            }
+
+            const noise = ctx.createBufferSource();
+            noise.buffer = noiseBuffer;
+
+            // Main tone oscillator
             const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            const filter = ctx.createBiquadFilter();
-
-            // Start high, drop quickly (like a bark)
-            osc.frequency.setValueAtTime(600, time);
-            osc.frequency.exponentialRampToValueAtTime(150, time + 0.15);
             osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(350, time);
+            osc.frequency.exponentialRampToValueAtTime(180, time + 0.08);
+            osc.frequency.exponentialRampToValueAtTime(120, time + 0.15);
 
-            filter.type = 'bandpass';
-            filter.frequency.value = 800;
-            filter.Q.value = 2;
+            // Formant filters for vocal quality
+            const formant1 = ctx.createBiquadFilter();
+            formant1.type = 'bandpass';
+            formant1.frequency.value = 600;
+            formant1.Q.value = 5;
 
-            osc.connect(filter);
-            filter.connect(gain);
-            gain.connect(ctx.destination);
+            const formant2 = ctx.createBiquadFilter();
+            formant2.type = 'bandpass';
+            formant2.frequency.value = 1200;
+            formant2.Q.value = 5;
 
-            // Sharp attack, quick decay
-            gain.gain.setValueAtTime(0, time);
-            gain.gain.linearRampToValueAtTime(this.volume * 0.4, time + 0.02);
-            gain.gain.exponentialRampToValueAtTime(this.volume * 0.2, time + 0.08);
-            gain.gain.exponentialRampToValueAtTime(0.001, time + 0.2);
+            // Gain nodes
+            const oscGain = ctx.createGain();
+            const noiseGain = ctx.createGain();
+            const masterGain = ctx.createGain();
+
+            // Connect oscillator path
+            osc.connect(formant1);
+            formant1.connect(oscGain);
+            oscGain.connect(masterGain);
+
+            // Connect noise path
+            noise.connect(formant2);
+            formant2.connect(noiseGain);
+            noiseGain.connect(masterGain);
+
+            masterGain.connect(ctx.destination);
+
+            // Envelope - sharp attack, quick decay
+            oscGain.gain.setValueAtTime(0, time);
+            oscGain.gain.linearRampToValueAtTime(this.volume * 0.5, time + 0.015);
+            oscGain.gain.exponentialRampToValueAtTime(this.volume * 0.3, time + 0.06);
+            oscGain.gain.exponentialRampToValueAtTime(0.001, time + 0.18);
+
+            noiseGain.gain.setValueAtTime(0, time);
+            noiseGain.gain.linearRampToValueAtTime(this.volume * 0.15, time + 0.01);
+            noiseGain.gain.exponentialRampToValueAtTime(0.001, time + 0.12);
+
+            masterGain.gain.value = 1;
 
             osc.start(time);
             osc.stop(time + 0.2);
+            noise.start(time);
+            noise.stop(time + 0.2);
 
-            time += 0.3; // Gap between barks
+            time += 0.35; // Gap between barks
         }
 
-        setTimeout(() => ctx.close(), 1500);
+        setTimeout(() => ctx.close(), 1800);
     }
 
     playBellSound(ctx) {
