@@ -416,12 +416,12 @@ class Timer {
 
     // Sound Manager
     loadAudio() {
-        // In real app, load files. Here we just setup placeholders or synth
-        // We will try to load files, if fail, fallback to synth (oscillator)
+        // Load audio files, fallback to synth if missing
         this.sounds = {
             click: new Audio('assets/sounds/click.mp3'),
             start: new Audio('assets/sounds/start.mp3'),
-            alarm: new Audio('assets/sounds/alarm.mp3')
+            alarm: new Audio('assets/sounds/alarm.mp3'),
+            bark: new Audio('assets/sounds/bark.mp3')
         };
 
         // Error handling for missing files (so code doesn't break)
@@ -469,11 +469,20 @@ class Timer {
     }
 
     playBarkSound(ctx) {
-        // More realistic dog bark using noise + formants
+        // Try to play bark audio file first
+        const barkAudio = this.sounds.bark;
+        if (barkAudio && !barkAudio.dataset.missing) {
+            ctx.close(); // Close unused context
+            barkAudio.volume = this.volume;
+            barkAudio.currentTime = 0;
+            barkAudio.play().catch(e => console.log('Bark audio failed', e));
+            return;
+        }
+
+        // Fallback: synthesized bark using noise + formants
         let time = ctx.currentTime;
 
         for (let bark = 0; bark < 3; bark++) {
-            // Create noise source for roughness
             const bufferSize = ctx.sampleRate * 0.3;
             const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
             const output = noiseBuffer.getChannelData(0);
@@ -484,14 +493,12 @@ class Timer {
             const noise = ctx.createBufferSource();
             noise.buffer = noiseBuffer;
 
-            // Main tone oscillator
             const osc = ctx.createOscillator();
             osc.type = 'sawtooth';
             osc.frequency.setValueAtTime(350, time);
             osc.frequency.exponentialRampToValueAtTime(180, time + 0.08);
             osc.frequency.exponentialRampToValueAtTime(120, time + 0.15);
 
-            // Formant filters for vocal quality
             const formant1 = ctx.createBiquadFilter();
             formant1.type = 'bandpass';
             formant1.frequency.value = 600;
@@ -502,24 +509,20 @@ class Timer {
             formant2.frequency.value = 1200;
             formant2.Q.value = 5;
 
-            // Gain nodes
             const oscGain = ctx.createGain();
             const noiseGain = ctx.createGain();
             const masterGain = ctx.createGain();
 
-            // Connect oscillator path
             osc.connect(formant1);
             formant1.connect(oscGain);
             oscGain.connect(masterGain);
 
-            // Connect noise path
             noise.connect(formant2);
             formant2.connect(noiseGain);
             noiseGain.connect(masterGain);
 
             masterGain.connect(ctx.destination);
 
-            // Envelope - sharp attack, quick decay
             oscGain.gain.setValueAtTime(0, time);
             oscGain.gain.linearRampToValueAtTime(this.volume * 0.5, time + 0.015);
             oscGain.gain.exponentialRampToValueAtTime(this.volume * 0.3, time + 0.06);
@@ -536,7 +539,7 @@ class Timer {
             noise.start(time);
             noise.stop(time + 0.2);
 
-            time += 0.35; // Gap between barks
+            time += 0.35;
         }
 
         setTimeout(() => ctx.close(), 1800);
