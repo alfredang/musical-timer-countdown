@@ -75,6 +75,11 @@ class Timer {
             this.soundOptions.forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.sound === savedSound);
             });
+        } else {
+            // No saved sound: ensure the UI reflects the default `this.selectedSound`
+            this.soundOptions.forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.sound === this.selectedSound);
+            });
         }
 
         if (savedTheme) {
