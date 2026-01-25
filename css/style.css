@@ -139,6 +139,18 @@ h1 {
     color: #94a3b8;
     text-transform: uppercase;
     letter-spacing: 0.1em;
+    transition: all 0.3s ease;
+}
+
+.status-text.complete {
+    font-size: 1.5rem;
+    font-weight: 700;
+    animation: flash 0.5s infinite;
+}
+
+@keyframes flash {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
 }
 
 /* Inputs */
@@ -291,6 +303,25 @@ h1 {
     color: var(--danger-color);
     border-color: var(--danger-color);
     background: rgba(239, 68, 68, 0.1);
+}
+
+.control-btn.stop {
+    background: var(--danger-color);
+    color: white;
+    animation: pulse 1s infinite;
+}
+
+.control-btn.stop:hover {
+    background: #dc2626;
+}
+
+.hidden {
+    display: none !important;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
 }
 
 /* Sound Controls */

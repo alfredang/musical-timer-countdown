@@ -7,6 +7,7 @@ class Timer {
         this.startBtn = document.getElementById('start-btn');
         this.pauseBtn = document.getElementById('pause-btn');
         this.resetBtn = document.getElementById('reset-btn');
+        this.stopAlarmBtn = document.getElementById('stop-alarm-btn');
         this.inputInputs = {
             h: document.getElementById('input-hours'),
             m: document.getElementById('input-minutes'),
@@ -103,6 +104,7 @@ class Timer {
         this.startBtn.addEventListener('click', () => this.start());
         this.pauseBtn.addEventListener('click', () => this.pause());
         this.resetBtn.addEventListener('click', () => this.reset());
+        this.stopAlarmBtn.addEventListener('click', () => this.stopAlarmAndReset());
 
         // Presets
         this.presetBtns.forEach(btn => {
@@ -302,9 +304,12 @@ class Timer {
     }
 
     startContinuousAlarm() {
+        this.isAlarming = true;
+        this.stopAlarmBtn.classList.remove('hidden');
+        this.timerStatus.classList.add('complete');
+
         if (this.isMuted) return;
 
-        this.isAlarming = true;
         this.playAlarmSound();
 
         // Repeat alarm every 2 seconds
@@ -321,6 +326,17 @@ class Timer {
             clearInterval(this.alarmInterval);
             this.alarmInterval = null;
         }
+        this.stopAlarmBtn.classList.add('hidden');
+        this.timerStatus.classList.remove('complete');
+    }
+
+    stopAlarmAndReset() {
+        this.stopAlarm();
+        this.updateUIState('idle');
+        this.totalSeconds = 0;
+        this.remainingSeconds = 0;
+        this.updateDisplay(0);
+        this.setProgress(100);
     }
 
     updateDisplay(seconds, isPreview = false) {
@@ -414,43 +430,129 @@ class Timer {
     playAlarmSound() {
         if (this.isMuted) return;
 
-        // Different synthesized sounds based on selection
-        const soundConfigs = {
-            beep: { freq: 440, duration: 800, pattern: [1] },
-            bell: { freq: 880, duration: 600, pattern: [1, 0.5, 1] },
-            chime: { freq: 660, duration: 400, pattern: [1, 0.8, 0.6, 0.4] },
-            alarm: { freq: 520, duration: 200, pattern: [1, 1, 1, 1, 1, 1] }
-        };
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
 
-        const config = soundConfigs[this.selectedSound] || soundConfigs.beep;
-        this.playPatternedSound(config.freq, config.duration, config.pattern);
+        switch (this.selectedSound) {
+            case 'bell':
+                this.playBellSound(ctx);
+                break;
+            case 'chime':
+                this.playChimeSound(ctx);
+                break;
+            case 'alarm':
+                this.playUrgentAlarm(ctx);
+                break;
+            default:
+                this.playMelodyBeep(ctx);
+        }
     }
 
-    playPatternedSound(baseFreq, duration, pattern) {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    playMelodyBeep(ctx) {
+        // Pleasant ascending melody
+        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
         let time = ctx.currentTime;
 
-        pattern.forEach((multiplier) => {
+        notes.forEach((freq) => {
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
 
-            osc.frequency.value = baseFreq * multiplier;
-            osc.type = this.selectedSound === 'bell' ? 'sine' :
-                       this.selectedSound === 'chime' ? 'triangle' : 'square';
-
+            osc.frequency.value = freq;
+            osc.type = 'sine';
             osc.connect(gain);
             gain.connect(ctx.destination);
 
-            gain.gain.setValueAtTime(this.volume * 0.15, time);
-            gain.gain.exponentialRampToValueAtTime(0.001, time + duration / 1000);
+            gain.gain.setValueAtTime(0, time);
+            gain.gain.linearRampToValueAtTime(this.volume * 0.3, time + 0.05);
+            gain.gain.exponentialRampToValueAtTime(0.001, time + 0.3);
 
             osc.start(time);
-            osc.stop(time + duration / 1000);
-
-            time += (duration / 1000) + 0.05;
+            osc.stop(time + 0.3);
+            time += 0.15;
         });
 
-        setTimeout(() => ctx.close(), pattern.length * (duration + 50) + 100);
+        setTimeout(() => ctx.close(), 1000);
+    }
+
+    playBellSound(ctx) {
+        // Rich bell with harmonics
+        const baseFreq = 440;
+        const harmonics = [1, 2, 3, 4.2, 5.4];
+        const time = ctx.currentTime;
+
+        harmonics.forEach((mult, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+
+            osc.frequency.value = baseFreq * mult;
+            osc.type = 'sine';
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            const amplitude = this.volume * 0.2 / (idx + 1);
+            gain.gain.setValueAtTime(amplitude, time);
+            gain.gain.exponentialRampToValueAtTime(0.001, time + 1.5);
+
+            osc.start(time);
+            osc.stop(time + 1.5);
+        });
+
+        setTimeout(() => ctx.close(), 2000);
+    }
+
+    playChimeSound(ctx) {
+        // Descending wind chime pattern
+        const notes = [1318.51, 1174.66, 987.77, 880, 783.99]; // E6, D6, B5, A5, G5
+        let time = ctx.currentTime;
+
+        notes.forEach((freq) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+
+            osc.frequency.value = freq;
+            osc.type = 'triangle';
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            gain.gain.setValueAtTime(this.volume * 0.25, time);
+            gain.gain.exponentialRampToValueAtTime(0.001, time + 0.6);
+
+            osc.start(time);
+            osc.stop(time + 0.6);
+            time += 0.12;
+        });
+
+        setTimeout(() => ctx.close(), 1500);
+    }
+
+    playUrgentAlarm(ctx) {
+        // Urgent two-tone alarm like emergency alert
+        const time = ctx.currentTime;
+
+        for (let n = 0; n < 4; n++) {
+            const osc1 = ctx.createOscillator();
+            const osc2 = ctx.createOscillator();
+            const gain = ctx.createGain();
+
+            osc1.frequency.value = 880;
+            osc2.frequency.value = 698.46;
+            osc1.type = 'square';
+            osc2.type = 'square';
+
+            osc1.connect(gain);
+            osc2.connect(gain);
+            gain.connect(ctx.destination);
+
+            const startTime = time + (n * 0.25);
+            gain.gain.setValueAtTime(this.volume * 0.1, startTime);
+            gain.gain.setValueAtTime(0, startTime + 0.12);
+
+            osc1.start(startTime);
+            osc1.stop(startTime + 0.12);
+            osc2.start(startTime + 0.12);
+            osc2.stop(startTime + 0.24);
+        }
+
+        setTimeout(() => ctx.close(), 1500);
     }
 
     toggleMute() {
