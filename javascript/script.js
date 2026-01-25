@@ -42,7 +42,7 @@ class Timer {
         this.audioCtx = null; // For simple beep if files missing, or we use Audio
         this.volume = 0.3;
         this.isMuted = false;
-        this.selectedSound = 'beep';
+        this.selectedSound = 'dream';
         this.selectedTheme = 'default';
         this.alarmInterval = null;
         this.isAlarming = false;
@@ -490,7 +490,10 @@ class Timer {
             click: new Audio('assets/sounds/click.mp3'),
             start: new Audio('assets/sounds/start.mp3'),
             alarm: new Audio('assets/sounds/alarm.mp3'),
-            bark: new Audio('assets/sounds/Portugal de Maria Luiza 2.mp3')
+            dream: new Audio('assets/sounds/Dream.mp3'),
+            inspire: new Audio('assets/sounds/Inspire.mp3'),
+            wing: new Audio('assets/sounds/Wing.mp3'),
+            morning: new Audio('assets/sounds/Morning.mp3')
         };
 
         // Error handling for missing files (so code doesn't break)
@@ -529,41 +532,55 @@ class Timer {
         this.activeContexts.push(ctx);
 
         switch (this.selectedSound) {
-            case 'bell':
-                if (isPreview) this.previewCtx = ctx;
-                this.playBellSound(ctx);
+            case 'dream': {
+                const a = this.sounds.dream;
+                if (a && !a.dataset.missing) {
+                    if (isPreview) { this.previewAudio = a; a.volume = this.volume; a.currentTime = 0; a.play().catch(()=>{}); a.onended = () => { if (this.previewing) this.stopPreview(); }; }
+                    else { this.activeAudio = a; a.volume = this.volume; a.currentTime = 0; a.play().catch(()=>{}); a.onended = () => { this.activeAudio = null; }; }
+                } else {
+                    if (isPreview) this.previewCtx = ctx;
+                    this.playChimeSound(ctx);
+                }
                 break;
-            case 'chime':
-                if (isPreview) this.previewCtx = ctx;
-                this.playChimeSound(ctx);
+            }
+            case 'inspire': {
+                const a = this.sounds.inspire;
+                if (a && !a.dataset.missing) {
+                    if (isPreview) { this.previewAudio = a; a.volume = this.volume; a.currentTime = 0; a.play().catch(()=>{}); a.onended = () => { if (this.previewing) this.stopPreview(); }; }
+                    else { this.activeAudio = a; a.volume = this.volume; a.currentTime = 0; a.play().catch(()=>{}); a.onended = () => { this.activeAudio = null; }; }
+                } else {
+                    if (isPreview) this.previewCtx = ctx;
+                    this.playBellSound(ctx);
+                }
                 break;
-            case 'alarm':
-                if (isPreview) this.previewCtx = ctx;
-                this.playUrgentAlarm(ctx);
-                break;
-            default:
-                // Default maps to the 'bark' audio/synth
-                const barkAudio = this.sounds.bark;
-                if (barkAudio && !barkAudio.dataset.missing) {
-                    // Play the file directly (don't need ctx)
-                    if (isPreview) {
-                        this.previewAudio = barkAudio;
-                        barkAudio.volume = this.volume;
-                        barkAudio.currentTime = 0;
-                        barkAudio.play().catch(e => console.log('Audio play failed', e));
-                        barkAudio.onended = () => { if (this.previewing) this.stopPreview(); };
-                    } else {
-                        // track the active audio so stopAlarm can stop it
-                        this.activeAudio = barkAudio;
-                        barkAudio.volume = this.volume;
-                        barkAudio.currentTime = 0;
-                        barkAudio.play().catch(e => console.log('Bark audio failed', e));
-                        barkAudio.onended = () => { this.activeAudio = null; };
-                    }
+            }
+            case 'wing': {
+                const a = this.sounds.wing;
+                if (a && !a.dataset.missing) {
+                    if (isPreview) { this.previewAudio = a; a.volume = this.volume; a.currentTime = 0; a.play().catch(()=>{}); a.onended = () => { if (this.previewing) this.stopPreview(); }; }
+                    else { this.activeAudio = a; a.volume = this.volume; a.currentTime = 0; a.play().catch(()=>{}); a.onended = () => { this.activeAudio = null; }; }
                 } else {
                     if (isPreview) this.previewCtx = ctx;
                     this.playBarkSound(ctx);
                 }
+                break;
+            }
+            case 'morning': {
+                const a = this.sounds.morning;
+                if (a && !a.dataset.missing) {
+                    if (isPreview) { this.previewAudio = a; a.volume = this.volume; a.currentTime = 0; a.play().catch(()=>{}); a.onended = () => { if (this.previewing) this.stopPreview(); }; }
+                    else { this.activeAudio = a; a.volume = this.volume; a.currentTime = 0; a.play().catch(()=>{}); a.onended = () => { this.activeAudio = null; }; }
+                } else {
+                    if (isPreview) this.previewCtx = ctx;
+                    this.playBellSound(ctx);
+                }
+                break;
+            }
+            default:
+                // fallback to chime
+                if (isPreview) this.previewCtx = ctx;
+                this.playChimeSound(ctx);
+        }
         }
     }
 
