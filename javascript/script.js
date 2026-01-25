@@ -394,9 +394,14 @@ class Timer {
 
         if (this.isMuted) return;
 
-        this.playAlarmSound();
+        const alarmAudio = this.getSelectedSoundAudio();
+        if (alarmAudio) {
+            this.startLoopingAlarm(alarmAudio);
+            return;
+        }
 
-        // Repeat alarm every 2 seconds
+        // Fallback to repeating synth when audio files are missing
+        this.playAlarmSound();
         this.alarmInterval = setInterval(() => {
             if (this.isAlarming && !this.isMuted) {
                 this.playAlarmSound();
@@ -421,7 +426,11 @@ class Timer {
 
         // Stop any active audio that was started by playAlarmSound
         if (this.activeAudio) {
-            try { this.activeAudio.pause(); this.activeAudio.currentTime = 0; } catch (e) {}
+            try {
+                this.activeAudio.loop = false;
+                this.activeAudio.pause();
+                this.activeAudio.currentTime = 0;
+            } catch (e) {}
             this.activeAudio = null;
         }
 
@@ -597,6 +606,20 @@ class Timer {
                 if (isPreview) this.previewCtx = ctx;
                 this.playChimeSound(ctx);
         }
+    }
+
+    getSelectedSoundAudio() {
+        const audio = this.sounds ? this.sounds[this.selectedSound] : null;
+        if (!audio || audio.dataset.missing) return null;
+        return audio;
+    }
+
+    startLoopingAlarm(audio) {
+        this.activeAudio = audio;
+        audio.loop = true;
+        audio.volume = this.volume;
+        audio.currentTime = 0;
+        audio.play().catch(() => {});
     }
 
     playBarkSound(ctx) {
