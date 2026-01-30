@@ -298,6 +298,14 @@ class Timer {
         if (this.previewing) {
             this.stopPreview();
         } else {
+            // Silent mode has no sound to preview
+            if (this.selectedSound === 'silent') {
+                this.previewSoundBtn.textContent = 'No Sound';
+                setTimeout(() => {
+                    this.previewSoundBtn.textContent = 'Preview Sound';
+                }, 1000);
+                return;
+            }
             this.previewing = true;
             this.previewTimeouts = [];
             this.playAlarmSound(true);
@@ -492,6 +500,10 @@ class Timer {
         this.stopAlarmBtn.classList.remove('hidden');
         this.timerStatus.classList.add('complete');
 
+        // Silent mode - no audio plays
+        if (this.selectedSound === 'silent') return;
+
+        // Muted - no audio plays
         if (this.isMuted) return;
 
         const alarmAudio = this.getSelectedSoundAudio();
@@ -503,7 +515,7 @@ class Timer {
         // Fallback to repeating synth when audio files are missing
         this.playAlarmSound();
         this.alarmInterval = setInterval(() => {
-            if (this.isAlarming && !this.isMuted) {
+            if (this.isAlarming && !this.isMuted && this.selectedSound !== 'silent') {
                 this.playAlarmSound();
             }
         }, 2000);
@@ -626,11 +638,14 @@ class Timer {
             morning: new Audio('assets/sounds/Morning.mp3')
         };
 
-        // Error handling for missing files (so code doesn't break)
+        // Error handling and preloading for audio files
         Object.values(this.sounds).forEach(audio => {
             audio.addEventListener('error', () => {
                 audio.dataset.missing = 'true';
             });
+            // Preload the audio
+            audio.preload = 'auto';
+            audio.load();
         });
     }
 
@@ -652,6 +667,7 @@ class Timer {
 
     playAlarmSound() {
         if (this.isMuted) return;
+        if (this.selectedSound === 'silent') return;
 
         // preview flag if provided as first argument
         const isPreview = arguments[0] === true;
@@ -715,6 +731,11 @@ class Timer {
     }
 
     getSelectedSoundAudio() {
+        // Silent mode - no audio
+        if (this.selectedSound === 'silent') {
+            return null;
+        }
+
         // Handle custom audio
         if (this.selectedSound === 'custom') {
             if (this.customAudio && !this.customAudio.dataset.missing) {
@@ -733,7 +754,26 @@ class Timer {
         audio.loop = true;
         audio.volume = this.volume;
         audio.currentTime = 0;
-        audio.play().catch(() => {});
+
+        // Try to play the audio, with retry on failure
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+            playPromise.catch((error) => {
+                console.log('Audio play failed, retrying...', error);
+                // Retry after a short delay (helps with autoplay restrictions)
+                setTimeout(() => {
+                    audio.play().catch(() => {
+                        // Final fallback to synth alarm
+                        this.playAlarmSound();
+                        this.alarmInterval = setInterval(() => {
+                            if (this.isAlarming && !this.isMuted && this.selectedSound !== 'silent') {
+                                this.playAlarmSound();
+                            }
+                        }, 2000);
+                    });
+                }, 100);
+            });
+        }
     }
 
     applyVolumeToAudio() {
