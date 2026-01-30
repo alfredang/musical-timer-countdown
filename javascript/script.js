@@ -134,14 +134,18 @@ class Timer {
     }
 
     showCustomUploadSection() {
-        if (this.customUploadSection) {
-            this.customUploadSection.classList.remove('hidden');
+        const section = this.customUploadSection || document.getElementById('custom-upload-section');
+        if (section) {
+            section.classList.remove('hidden');
+            section.style.display = 'flex';
         }
     }
 
     hideCustomUploadSection() {
-        if (this.customUploadSection) {
-            this.customUploadSection.classList.add('hidden');
+        const section = this.customUploadSection || document.getElementById('custom-upload-section');
+        if (section) {
+            section.classList.add('hidden');
+            section.style.display = 'none';
         }
     }
 
@@ -261,6 +265,13 @@ class Timer {
                 this.saveSettings();
             });
         });
+
+        // Also handle direct click on custom button to show upload
+        if (this.customSoundBtn) {
+            this.customSoundBtn.addEventListener('click', () => {
+                this.showCustomUploadSection();
+            });
+        }
 
         // Custom Audio Upload
         if (this.uploadAudioBtn) {
