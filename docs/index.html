@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Guide - Musical Class Break Timer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary-color: #3b82f6;
+            --accent-color: #60a5fa;
+            --success-color: #22c55e;
+            --warning-color: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            padding: 3rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.125rem;
+        }
+
+        .cta-button {
+            display: inline-block;
+            margin-top: 1.5rem;
+            padding: 0.875rem 2rem;
+            background: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .cta-button:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin: 2.5rem 0 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 1.5rem 0 1rem;
+            color: var(--accent-color);
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: var(--text-muted);
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card h3 {
+            margin-top: 0;
+        }
+
+        .steps {
+            counter-reset: step;
+            list-style: none;
+            padding: 0;
+        }
+
+        .steps li {
+            position: relative;
+            padding-left: 3rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .steps li::before {
+            counter-increment: step;
+            content: counter(step);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 2rem;
+            height: 2rem;
+            background: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .feature-item {
+            background: var(--card-bg);
+            padding: 1.25rem;
+            border-radius: 0.75rem;
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .feature-item h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-item p {
+            font-size: 0.875rem;
+            margin: 0;
+        }
+
+        .tip {
+            background: rgba(34, 197, 94, 0.1);
+            border-left: 4px solid var(--success-color);
+            padding: 1rem 1.25rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+            margin: 1.5rem 0;
+        }
+
+        .tip strong {
+            color: var(--success-color);
+        }
+
+        .warning {
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 4px solid var(--warning-color);
+            padding: 1rem 1.25rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+            margin: 1.5rem 0;
+        }
+
+        .warning strong {
+            color: var(--warning-color);
+        }
+
+        .theme-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            margin: 1rem 0;
+        }
+
+        .theme-preview {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            background: var(--card-bg);
+            border-radius: 0.5rem;
+        }
+
+        .theme-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 3px solid;
+        }
+
+        .theme-preview span {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        kbd {
+            background: var(--card-bg);
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-family: monospace;
+            font-size: 0.875rem;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        footer {
+            text-align: center;
+            padding: 3rem 0;
+            margin-top: 3rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-muted);
+        }
+
+        footer a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 1.75rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            .theme-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Musical Class Break Timer</h1>
+            <p class="subtitle">User Guide</p>
+            <a href="../index.html" class="cta-button">Launch Timer</a>
+        </header>
+
+        <main>
+            <h2>Getting Started</h2>
+            <p>The Musical Class Break Timer is a simple yet powerful countdown timer designed for classrooms, study sessions, and productivity breaks. No installation required - just open and start timing!</p>
+
+            <div class="feature-grid">
+                <div class="feature-item">
+                    <h4>Preset Times</h4>
+                    <p>Quick buttons for 15m, 30m, 45m, 1h, 1h 15m, and 1h 30m</p>
+                </div>
+                <div class="feature-item">
+                    <h4>Custom Input</h4>
+                    <p>Enter any time in hours, minutes, and seconds</p>
+                </div>
+                <div class="feature-item">
+                    <h4>Visual Progress</h4>
+                    <p>Animated ring shows remaining time at a glance</p>
+                </div>
+                <div class="feature-item">
+                    <h4>Custom Sounds</h4>
+                    <p>Upload your own MP3 or use built-in alarm sounds</p>
+                </div>
+            </div>
+
+            <h2>Setting a Timer</h2>
+
+            <div class="card">
+                <h3>Method 1: Use Preset Buttons</h3>
+                <p>Click any of the preset buttons below the timer display:</p>
+                <ul class="steps">
+                    <li>Click a preset time button (e.g., "15m" for 15 minutes)</li>
+                    <li>The timer will be set automatically</li>
+                    <li>Click <kbd>Start</kbd> to begin the countdown</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Method 2: Manual Entry</h3>
+                <p>Enter a custom time using the input fields:</p>
+                <ul class="steps">
+                    <li>Click on the HR, MIN, or SEC input field</li>
+                    <li>Type your desired time (values auto-adjust if you enter more than 59 for minutes/seconds)</li>
+                    <li>Click <kbd>Start</kbd> to begin the countdown</li>
+                </ul>
+            </div>
+
+            <h2>Timer Controls</h2>
+
+            <div class="feature-grid">
+                <div class="feature-item">
+                    <h4>Start / Resume</h4>
+                    <p>Begins the countdown. Changes to "Resume" when paused.</p>
+                </div>
+                <div class="feature-item">
+                    <h4>Pause</h4>
+                    <p>Temporarily stops the timer. Click Resume to continue.</p>
+                </div>
+                <div class="feature-item">
+                    <h4>Reset</h4>
+                    <p>Clears the timer completely back to 00:00:00.</p>
+                </div>
+                <div class="feature-item">
+                    <h4>Stop Alarm</h4>
+                    <p>Appears when timer ends. Silences the alarm and resets.</p>
+                </div>
+            </div>
+
+            <h2>When the Timer Completes</h2>
+            <p>When your countdown reaches zero:</p>
+            <ul class="steps">
+                <li>The display shows <strong>"Time's Up!"</strong> with a flashing animation</li>
+                <li>Your selected alarm sound plays continuously on loop</li>
+                <li>A red <kbd>Stop Alarm</kbd> button appears</li>
+                <li>Click the button to silence the alarm and reset the timer</li>
+            </ul>
+
+            <div class="tip">
+                <strong>Tip:</strong> The alarm will continue playing until you click Stop Alarm, so you won't miss it even if you step away!
+            </div>
+
+            <h2>Sound Settings</h2>
+
+            <h3>Volume Control</h3>
+            <p>Use the volume slider at the bottom of the screen to adjust the alarm volume. Click the speaker icon to mute/unmute.</p>
+
+            <h3>Choosing an Alarm Sound</h3>
+            <ol class="steps">
+                <li>Click the <strong>gear icon</strong> in the top-right corner to open Settings</li>
+                <li>In the "Alarm Sound" section, choose from: <strong>Dream</strong>, <strong>Inspire</strong>, <strong>Wing</strong>, or <strong>Custom</strong></li>
+                <li>Click <kbd>Preview Sound</kbd> to hear your selection</li>
+                <li>Your choice is saved automatically</li>
+            </ol>
+
+            <h3>Uploading Custom Audio</h3>
+            <ol class="steps">
+                <li>Open Settings and select the <strong>Custom</strong> sound option</li>
+                <li>Click <kbd>Upload MP3</kbd> to choose a file from your device</li>
+                <li>Select an MP3 file (maximum 5MB)</li>
+                <li>The filename will appear next to the button</li>
+                <li>Click <kbd>Preview Sound</kbd> to test your upload</li>
+            </ol>
+
+            <div class="warning">
+                <strong>Note:</strong> Custom audio is stored in your browser's localStorage. If you clear your browser data, you'll need to upload it again.
+            </div>
+
+            <h2>Color Themes</h2>
+            <p>Personalize the timer with 6 beautiful color themes. Open Settings and choose your favorite:</p>
+
+            <div class="theme-grid">
+                <div class="theme-preview">
+                    <div class="theme-circle" style="background: #0f172a; border-color: #3b82f6;"></div>
+                    <span>Default</span>
+                </div>
+                <div class="theme-preview">
+                    <div class="theme-circle" style="background: #0c4a6e; border-color: #06b6d4;"></div>
+                    <span>Ocean</span>
+                </div>
+                <div class="theme-preview">
+                    <div class="theme-circle" style="background: #14532d; border-color: #22c55e;"></div>
+                    <span>Forest</span>
+                </div>
+                <div class="theme-preview">
+                    <div class="theme-circle" style="background: #431407; border-color: #f97316;"></div>
+                    <span>Sunset</span>
+                </div>
+                <div class="theme-preview">
+                    <div class="theme-circle" style="background: #2e1065; border-color: #a855f7;"></div>
+                    <span>Purple</span>
+                </div>
+                <div class="theme-preview">
+                    <div class="theme-circle" style="background: #4c0519; border-color: #f43f5e;"></div>
+                    <span>Rose</span>
+                </div>
+            </div>
+
+            <h2>Tips & Tricks</h2>
+
+            <div class="card">
+                <h3>Keyboard Shortcuts</h3>
+                <p>While focused on an input field, use <kbd>Tab</kbd> to move between hours, minutes, and seconds fields.</p>
+            </div>
+
+            <div class="card">
+                <h3>Browser Tab Title</h3>
+                <p>The browser tab shows the current countdown time, so you can see the remaining time even when the timer is in a background tab!</p>
+            </div>
+
+            <div class="card">
+                <h3>Mobile Friendly</h3>
+                <p>The timer is fully responsive and works great on phones and tablets. Just open it in your mobile browser!</p>
+            </div>
+
+            <h2>Troubleshooting</h2>
+
+            <div class="card">
+                <h3>Sound not playing?</h3>
+                <ul>
+                    <li>Check that the volume slider is not at zero</li>
+                    <li>Ensure the mute button (speaker icon) is not enabled</li>
+                    <li>Some browsers require user interaction before playing audio - try clicking anywhere on the page first</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Custom audio not working?</h3>
+                <ul>
+                    <li>Ensure the file is a valid MP3 format</li>
+                    <li>Check that the file size is under 5MB</li>
+                    <li>Try re-uploading the file</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Settings not saving?</h3>
+                <ul>
+                    <li>Make sure your browser allows localStorage</li>
+                    <li>Private/Incognito mode may not persist settings</li>
+                    <li>Clearing browser data will reset all settings</li>
+                </ul>
+            </div>
+        </main>
+
+        <footer>
+            <p>Powered by <strong>Tertiary Infotech Academy Pte Ltd</strong></p>
+            <p style="margin-top: 0.5rem;">
+                <a href="../index.html">Back to Timer</a> |
+                <a href="https://github.com/alfredang/musical-timer-countdown">GitHub Repository</a>
+            </p>
+        </footer>
+    </div>
+</body>
+</html>

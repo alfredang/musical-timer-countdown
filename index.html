@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Class Break Timer</title>
+    <title>Musical Class Break Timer</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -16,7 +16,7 @@
 <body>
     <div class="app-container">
         <header>
-            <h1>Class Break Timer</h1>
+            <h1>Musical Class Break Timer</h1>
             <button id="settings-btn" class="icon-button" aria-label="Settings">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -46,7 +46,12 @@
                         <button class="sound-option active" data-sound="dream">Dream</button>
                         <button class="sound-option" data-sound="inspire">Inspire</button>
                         <button class="sound-option" data-sound="wing">Wing</button>
-                        <button class="sound-option" data-sound="morning">Morning</button>
+                        <button class="sound-option" data-sound="custom" id="custom-sound-btn">Custom</button>
+                    </div>
+                    <div id="custom-upload-section" class="custom-upload-section hidden">
+                        <input type="file" id="custom-audio-input" accept="audio/mp3,audio/mpeg,.mp3" hidden>
+                        <button id="upload-audio-btn" class="upload-btn">Upload MP3</button>
+                        <span id="custom-audio-name" class="custom-audio-name"></span>
                     </div>
                     <button id="preview-sound" class="preview-btn">Preview Sound</button>
                 </div>

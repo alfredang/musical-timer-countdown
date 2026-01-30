@@ -1,4 +1,4 @@
-# Class Break Timer
+# Musical Class Break Timer
 
 A sleek, modern countdown timer built with vanilla HTML, CSS, and JavaScript. Designed for classrooms, study sessions, and productivity breaks.
 
@@ -6,7 +6,9 @@ A sleek, modern countdown timer built with vanilla HTML, CSS, and JavaScript. De
 
 ## Demo
 
-[**Live Demo**](https://alfredang.github.io/timer-countdown/)
+[**Live Demo**](https://alfredang.github.io/musical-timer-countdown/)
+
+[**User Guide**](https://alfredang.github.io/musical-timer-countdown/docs/)
 
 ## Features
 
@@ -19,7 +21,8 @@ A sleek, modern countdown timer built with vanilla HTML, CSS, and JavaScript. De
 - **Reset**: Always-available reset button clears the timer back to 00:00:00
 
 ### Sound Alerts
-- **4 Alarm Sounds**: Choose from Dream, Inspire, Wing, or Morning
+- **3 Built-in Alarm Sounds**: Choose from Dream, Inspire, or Wing
+- **Custom MP3 Upload**: Upload your own MP3 file (up to 5MB) as a custom alarm sound
 - **Continuous Alert**: Alarm loops until manually stopped when timer reaches zero
 - **Volume Control**: Adjustable volume slider from silent to maximum
 - **Mute Toggle**: Quick mute/unmute button
@@ -27,7 +30,7 @@ A sleek, modern countdown timer built with vanilla HTML, CSS, and JavaScript. De
 
 ### Customization
 - **6 Color Themes**: Default (Blue), Ocean, Forest, Sunset, Purple, and Rose
-- **Settings Persist**: Your sound and theme preferences are saved in localStorage
+- **Settings Persist**: Your sound, theme, and custom audio preferences are saved in localStorage
 - **Mobile Responsive**: Fully optimized for all screen sizes
 
 ## How to Use
@@ -48,22 +51,25 @@ A sleek, modern countdown timer built with vanilla HTML, CSS, and JavaScript. De
 
 ### Customizing Settings
 1. Click the **gear icon** (top right) to open Settings
-2. **Alarm Sound**: Select your preferred sound and click "Preview Sound" to test
-3. **Color Theme**: Choose from 6 beautiful color schemes
-4. Settings are automatically saved
+2. **Alarm Sound**: Select from built-in sounds or choose "Custom" to upload your own MP3
+3. **Custom Upload**: Click "Upload MP3" to select a file (max 5MB)
+4. **Color Theme**: Choose from 6 beautiful color schemes
+5. Settings are automatically saved
 
 ## Project Structure
 
 ```
-timer-countdown/
+musical-timer-countdown/
 ├── index.html          # Main HTML structure
 ├── css/
 │   └── style.css       # Styling, themes, and responsive design
 ├── javascript/
-│   └── script.js       # Timer logic and audio synthesis
+│   └── script.js       # Timer logic and audio handling
 ├── assets/
 │   ├── preview.png     # Preview image for README
-│   └── sounds/         # Optional audio files (falls back to Web Audio API)
+│   └── sounds/         # Built-in audio files
+├── docs/
+│   └── index.html      # User guide (GitHub Pages)
 └── README.md
 ```
 
@@ -80,25 +86,25 @@ Works on all modern browsers that support:
 - CSS Custom Properties (CSS Variables)
 - Web Audio API
 - ES6+ JavaScript features
+- File API (for custom MP3 upload)
 
 ## Getting Started
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/alfredang/timer-countdown.git
+   git clone https://github.com/alfredang/musical-timer-countdown.git
    ```
 2. Open `index.html` in your browser
 3. No build process or server required!
 
 ## Sound System
 
-The app plays audio tracks from `assets/sounds/` and loops the selected track on completion:
-- **Dream**: `Dream.mp3`
-- **Inspire**: `Inspire.mp3`
-- **Wing**: `Wing.mp3`
-- **Morning**: `Morning.mp3`
+The app includes 3 built-in alarm sounds:
+- **Dream**: `Dream.mp3` - Calm, dreamy melody
+- **Inspire**: `Inspire.mp3` - Uplifting tune
+- **Wing**: `Wing.mp3` - Light, airy sound
 
-Optional: Add `click.mp3` and `start.mp3` to `assets/sounds/` for UI feedback sounds.
+**Custom Audio**: Upload your own MP3 file (up to 5MB) which will be stored in your browser's localStorage for future use.
 
 ## License
 

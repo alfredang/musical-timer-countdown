@@ -566,6 +566,47 @@ footer {
     background: rgba(255, 255, 255, 0.1);
 }
 
+/* Custom Audio Upload */
+.custom-upload-section {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background: var(--bg-color);
+    border-radius: 0.5rem;
+}
+
+.custom-upload-section.hidden {
+    display: none;
+}
+
+.upload-btn {
+    background: var(--primary-color);
+    border: none;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.875rem;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.upload-btn:hover {
+    background: #2563eb;
+}
+
+.custom-audio-name {
+    font-size: 0.875rem;
+    color: #94a3b8;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+}
+
 /* Theme Options */
 .theme-options {
     display: grid;

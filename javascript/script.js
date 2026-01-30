@@ -28,6 +28,13 @@ class Timer {
         this.themeOptions = document.querySelectorAll('.theme-option');
         this.previewSoundBtn = document.getElementById('preview-sound');
 
+        // Custom Audio Elements
+        this.customSoundBtn = document.getElementById('custom-sound-btn');
+        this.customUploadSection = document.getElementById('custom-upload-section');
+        this.customAudioInput = document.getElementById('custom-audio-input');
+        this.uploadAudioBtn = document.getElementById('upload-audio-btn');
+        this.customAudioNameSpan = document.getElementById('custom-audio-name');
+
         // Constants (Radius from SVG)
         this.radius = this.progressRing.r.baseVal.value;
         this.circumference = 2 * Math.PI * this.radius;
@@ -44,6 +51,9 @@ class Timer {
         this.isMuted = false;
         this.selectedSound = 'dream';
         this.selectedTheme = 'default';
+        this.customAudioData = null;
+        this.customAudioName = null;
+        this.customAudio = null;
         this.alarmInterval = null;
         this.isAlarming = false;
         // Preview controls
@@ -74,12 +84,25 @@ class Timer {
     loadSettings() {
         const savedSound = this.safeStorageGet('timerSound');
         const savedTheme = this.safeStorageGet('timerTheme');
+        const savedCustomAudio = this.safeStorageGet('timerCustomAudio');
+        const savedCustomAudioName = this.safeStorageGet('timerCustomAudioName');
+
+        // Load custom audio if saved
+        if (savedCustomAudio) {
+            this.customAudioData = savedCustomAudio;
+            this.customAudioName = savedCustomAudioName || 'Custom Audio';
+            this.loadCustomAudioFromData();
+        }
 
         if (savedSound) {
             this.selectedSound = savedSound;
             this.soundOptions.forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.sound === savedSound);
             });
+            // Show custom upload section if custom is selected
+            if (savedSound === 'custom') {
+                this.showCustomUploadSection();
+            }
         } else {
             // No saved sound: ensure the UI reflects the default `this.selectedSound`
             this.soundOptions.forEach(btn => {
@@ -99,9 +122,62 @@ class Timer {
         }
     }
 
+    loadCustomAudioFromData() {
+        if (!this.customAudioData) return;
+        this.customAudio = new Audio(this.customAudioData);
+        this.customAudio.addEventListener('error', () => {
+            this.customAudio.dataset.missing = 'true';
+        });
+        if (this.customAudioNameSpan) {
+            this.customAudioNameSpan.textContent = this.customAudioName;
+        }
+    }
+
+    showCustomUploadSection() {
+        if (this.customUploadSection) {
+            this.customUploadSection.classList.remove('hidden');
+        }
+    }
+
+    hideCustomUploadSection() {
+        if (this.customUploadSection) {
+            this.customUploadSection.classList.add('hidden');
+        }
+    }
+
+    handleCustomAudioUpload(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Validate file type
+        if (!file.type.match(/audio\/(mp3|mpeg)/)) {
+            alert('Please select an MP3 file.');
+            return;
+        }
+
+        // Limit file size (5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            alert('File size must be less than 5MB.');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            this.customAudioData = event.target.result;
+            this.customAudioName = file.name;
+            this.loadCustomAudioFromData();
+            this.saveSettings();
+        };
+        reader.readAsDataURL(file);
+    }
+
     saveSettings() {
         this.safeStorageSet('timerSound', this.selectedSound);
         this.safeStorageSet('timerTheme', this.selectedTheme);
+        if (this.customAudioData) {
+            this.safeStorageSet('timerCustomAudio', this.customAudioData);
+            this.safeStorageSet('timerCustomAudioName', this.customAudioName);
+        }
     }
 
     safeStorageGet(key) {
@@ -174,9 +250,30 @@ class Timer {
                 this.soundOptions.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 this.selectedSound = btn.dataset.sound;
+
+                // Show/hide custom upload section
+                if (btn.dataset.sound === 'custom') {
+                    this.showCustomUploadSection();
+                } else {
+                    this.hideCustomUploadSection();
+                }
+
                 this.saveSettings();
             });
         });
+
+        // Custom Audio Upload
+        if (this.uploadAudioBtn) {
+            this.uploadAudioBtn.addEventListener('click', () => {
+                this.customAudioInput.click();
+            });
+        }
+
+        if (this.customAudioInput) {
+            this.customAudioInput.addEventListener('change', (e) => {
+                this.handleCustomAudioUpload(e);
+            });
+        }
 
         // Theme Options
         this.themeOptions.forEach(btn => {
@@ -427,6 +524,11 @@ class Timer {
             });
         }
 
+        // Stop custom audio
+        if (this.customAudio) {
+            try { this.customAudio.pause(); this.customAudio.currentTime = 0; } catch (e) {}
+        }
+
         // Stop any active audio that was started by playAlarmSound
         if (this.activeAudio) {
             try {
@@ -465,7 +567,7 @@ class Timer {
 
         const str = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
         this.timeDisplay.textContent = str;
-        document.title = `${str} - Class Break Timer`;
+        document.title = `${str} - Musical Class Break Timer`;
 
         // Ring progress
         if (this.totalSeconds > 0 && !isPreview) {
@@ -560,6 +662,18 @@ class Timer {
         this.activeContexts.push(ctx);
 
         switch (this.selectedSound) {
+            case 'custom': {
+                const a = this.customAudio;
+                if (a && !a.dataset.missing) {
+                    if (isPreview) { this.previewAudio = a; a.volume = this.volume; a.currentTime = 0; a.play().catch(()=>{}); a.onended = () => { if (this.previewing) this.stopPreview(); }; }
+                    else { this.activeAudio = a; a.volume = this.volume; a.currentTime = 0; a.play().catch(()=>{}); a.onended = () => { this.activeAudio = null; }; }
+                } else {
+                    // No custom audio uploaded, fallback to chime
+                    if (isPreview) this.previewCtx = ctx;
+                    this.playChimeSound(ctx);
+                }
+                break;
+            }
             case 'dream': {
                 const a = this.sounds.dream;
                 if (a && !a.dataset.missing) {
@@ -593,17 +707,6 @@ class Timer {
                 }
                 break;
             }
-            case 'morning': {
-                const a = this.sounds.morning;
-                if (a && !a.dataset.missing) {
-                    if (isPreview) { this.previewAudio = a; a.volume = this.volume; a.currentTime = 0; a.play().catch(()=>{}); a.onended = () => { if (this.previewing) this.stopPreview(); }; }
-                    else { this.activeAudio = a; a.volume = this.volume; a.currentTime = 0; a.play().catch(()=>{}); a.onended = () => { this.activeAudio = null; }; }
-                } else {
-                    if (isPreview) this.previewCtx = ctx;
-                    this.playBellSound(ctx);
-                }
-                break;
-            }
             default:
                 // fallback to chime
                 if (isPreview) this.previewCtx = ctx;
@@ -612,6 +715,14 @@ class Timer {
     }
 
     getSelectedSoundAudio() {
+        // Handle custom audio
+        if (this.selectedSound === 'custom') {
+            if (this.customAudio && !this.customAudio.dataset.missing) {
+                return this.customAudio;
+            }
+            return null;
+        }
+
         const audio = this.sounds ? this.sounds[this.selectedSound] : null;
         if (!audio || audio.dataset.missing) return null;
         return audio;
@@ -630,6 +741,10 @@ class Timer {
             Object.values(this.sounds).forEach(audio => {
                 try { audio.volume = this.volume; } catch (e) {}
             });
+        }
+
+        if (this.customAudio) {
+            try { this.customAudio.volume = this.volume; } catch (e) {}
         }
 
         if (this.activeAudio) {
