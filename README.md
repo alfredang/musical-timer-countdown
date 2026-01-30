@@ -2,7 +2,10 @@
 
 A sleek, modern countdown timer built with vanilla HTML, CSS, and JavaScript. Designed for classrooms, study sessions, and productivity breaks.
 
-![App Preview](assets/preview.png)
+<p align="center">
+  <img src="assets/image1.jpeg" alt="Timer Interface" width="400"/>
+  <img src="assets/image2.jpeg" alt="Settings Panel" width="400"/>
+</p>
 
 ## Demo
 
@@ -66,7 +69,8 @@ musical-timer-countdown/
 ├── javascript/
 │   └── script.js       # Timer logic and audio handling
 ├── assets/
-│   ├── preview.png     # Preview image for README
+│   ├── image1.jpeg     # Timer interface preview
+│   ├── image2.jpeg     # Settings panel preview
 │   └── sounds/         # Built-in audio files
 ├── docs/
 │   └── index.html      # User guide (GitHub Pages)
