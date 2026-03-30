@@ -52,19 +52,29 @@ main {
 header {
     width: 100%;
     display: flex;
-    justify-content: center;
-    /* Center the content */
+    flex-direction: column;
     align-items: center;
     position: relative;
-    /* For absolute positioning of the button */
+    gap: 0;
 }
 
 h1 {
     font-weight: 700;
     font-size: 3rem;
-    /* Bigger font */
     letter-spacing: -0.025em;
     text-align: center;
+    margin: 0;
+    line-height: 1.2;
+}
+
+#motivational-quote {
+    color: #4ade80;
+    font-size: 0.85rem;
+    font-style: italic;
+    margin: 0.25rem 1rem 0;
+    text-align: center;
+    line-height: 1.4;
+    max-width: 500px;
 }
 
 .icon-button {
