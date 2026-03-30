@@ -590,7 +590,7 @@ class Timer {
 
         const str = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
         this.timeDisplay.textContent = str;
-        document.title = `${str} - Musical Class Break Timer`;
+        document.title = `${str} - Musical Break Timer`;
 
         // Ring progress
         if (this.totalSeconds > 0 && !isPreview) {
