@@ -226,7 +226,7 @@ class Timer {
 
         // Time slider: drag forward/backward to adjust time (also while running)
         this.timeSlider.addEventListener('input', (e) => {
-            this.adjustTime(parseInt(e.target.value));
+            this.adjustTime(Math.round(parseFloat(e.target.value)));
         });
         this.timeSlider.addEventListener('pointerdown', () => { this.sliderDragging = true; });
         const endDrag = () => { this.sliderDragging = false; this.updateDisplay(this.remainingSeconds, !this.isRunning && !this.isPaused && this.totalSeconds === 0); };
@@ -468,6 +468,11 @@ class Timer {
             } else {
                 this.remainingSeconds = left;
                 this.updateDisplay(this.remainingSeconds);
+                if (!this.sliderDragging) {
+                    // smooth sub-second movement
+                    this.timeSlider.value = (this.endTime - now) / 1000;
+                    this.paintSlider();
+                }
             }
         }, 50); // check frequent for UI smoothness, but logic is based on Date.now()
     }
@@ -602,6 +607,12 @@ class Timer {
         this.setProgress(100);
     }
 
+    paintSlider() {
+        const max = parseFloat(this.timeSlider.max) || 0;
+        const pct = max > 0 ? (parseFloat(this.timeSlider.value) / max) * 100 : 0;
+        this.timeSlider.style.setProperty('--fill', pct + '%');
+    }
+
     updateDisplay(seconds, isPreview = false) {
         const h = Math.floor(seconds / 3600);
         const m = Math.floor((seconds % 3600) / 60);
@@ -615,6 +626,7 @@ class Timer {
             this.timeSlider.max = this.totalSeconds;
             this.timeSlider.value = seconds;
             this.timeSlider.disabled = this.totalSeconds <= 0;
+            this.paintSlider();
         }
 
         // Ring progress

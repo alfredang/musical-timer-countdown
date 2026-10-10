@@ -365,10 +365,10 @@ h1 {
 #time-slider {
     -webkit-appearance: none;
     appearance: none;
-    width: min(150px, 40vw);
-    height: 4px;
-    border-radius: 2px;
-    background: #475569;
+    width: min(260px, 60vw);
+    height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(to right, var(--primary-color, #3b82f6) var(--fill, 0%), #475569 var(--fill, 0%));
     outline: none;
 }
 
@@ -376,8 +376,8 @@ h1 {
     -webkit-appearance: none;
     appearance: none;
     appearance: none;
-    width: 12px;
-    height: 12px;
+    width: 16px;
+    height: 16px;
     border-radius: 50%;
     background: var(--text-color);
     cursor: pointer;
