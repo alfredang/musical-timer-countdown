@@ -17,7 +17,7 @@ A sleek, modern countdown timer built with vanilla HTML, CSS, and JavaScript. De
 
 ### Timer Functionality
 - **Preset Times**: Quick-start buttons for 10m, 15m, 30m, 45m, 1h, 1h 15m, and 1h 30m
-- **Time Slider**: Drag the slider forward or backward to adjust the time, even while the timer is running
+- **Time Slider**: Drag the bottom slider forward or backward to adjust the time, even while the timer is running
 - **Manual Input**: Enter custom hours, minutes, and seconds
 - **Accurate Timing**: Uses `Date.now()` for drift-free countdown accuracy
 - **Visual Progress Ring**: Animated circular progress indicator shows remaining time
@@ -28,7 +28,7 @@ A sleek, modern countdown timer built with vanilla HTML, CSS, and JavaScript. De
 - **3 Built-in Alarm Sounds**: Choose from Dream, Inspire, or Wing
 - **Custom MP3 Upload**: Upload your own MP3 file (up to 5MB) as a custom alarm sound
 - **Continuous Alert**: Alarm loops until manually stopped when timer reaches zero
-- **Volume Control**: Adjustable volume slider from silent to maximum
+- **Mute Toggle**: Mute or unmute the alarm sound
 - **Mute Toggle**: Quick mute/unmute button
 - **Preview Sound**: Test your selected alarm sound before starting
 

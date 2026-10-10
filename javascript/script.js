@@ -18,7 +18,6 @@ class Timer {
         this.timeSlider = document.getElementById('time-slider');
 
         // Sound Elements
-        this.volumeSlider = document.getElementById('volume-slider');
         this.muteBtn = document.getElementById('mute-btn');
 
         // Settings Elements
@@ -78,7 +77,6 @@ class Timer {
         this.updateDisplay(0);
         this.loadAudio();
         // Sync volume with slider default
-        this.volume = parseFloat(this.volumeSlider.value);
         this.applyVolumeToAudio();
     }
 
@@ -238,12 +236,6 @@ class Timer {
         });
 
         // Sound
-        this.volumeSlider.addEventListener('input', (e) => {
-            this.handleVolumeChange(e.target.value, false);
-        });
-        this.volumeSlider.addEventListener('change', (e) => {
-            this.handleVolumeChange(e.target.value, true);
-        });
 
         this.muteBtn.addEventListener('click', () => this.toggleMute());
 
