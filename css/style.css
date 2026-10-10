@@ -368,7 +368,7 @@ h1 {
     width: min(260px, 60vw);
     height: 6px;
     border-radius: 3px;
-    background: linear-gradient(to right, var(--primary-color, #3b82f6) var(--fill, 0%), #475569 var(--fill, 0%));
+    background: linear-gradient(to right, var(--danger-color, #ef4444) var(--fill, 0%), #475569 var(--fill, 0%));
     outline: none;
 }
 
