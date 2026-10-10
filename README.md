@@ -17,7 +17,7 @@ A sleek, modern countdown timer built with vanilla HTML, CSS, and JavaScript. De
 
 ### Timer Functionality
 - **Preset Times**: Quick-start buttons for 10m, 15m, 30m, 45m, 1h, 1h 15m, and 1h 30m
-- **Time Slider**: Drag the bottom slider forward or backward to adjust the time, even while the timer is running
+- **Progress Slider**: Shows time elapsed; drag it left to reduce the time remaining, even while the timer is running
 - **Manual Input**: Enter custom hours, minutes, and seconds
 - **Accurate Timing**: Uses `Date.now()` for drift-free countdown accuracy
 - **Visual Progress Ring**: Animated circular progress indicator shows remaining time

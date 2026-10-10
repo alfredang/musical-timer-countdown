@@ -228,6 +228,10 @@ class Timer {
         this.timeSlider.addEventListener('input', (e) => {
             this.adjustTime(parseInt(e.target.value));
         });
+        this.timeSlider.addEventListener('pointerdown', () => { this.sliderDragging = true; });
+        const endDrag = () => { this.sliderDragging = false; this.updateDisplay(this.remainingSeconds, !this.isRunning && !this.isPaused && this.totalSeconds === 0); };
+        this.timeSlider.addEventListener('pointerup', endDrag);
+        this.timeSlider.addEventListener('pointercancel', endDrag);
 
         // Manual Input Changes
         Object.values(this.inputInputs).forEach(input => {
@@ -392,7 +396,9 @@ class Timer {
     }
 
     adjustTime(seconds) {
-        if (this.isAlarming) return;
+        // Slider shows progress: it can only shorten the time left, never exceed the total
+        if (this.isAlarming || this.totalSeconds <= 0) return;
+        seconds = Math.min(Math.max(seconds, 0), this.totalSeconds);
         this.remainingSeconds = seconds;
         if (this.isRunning) {
             if (seconds <= 0) {
@@ -400,13 +406,10 @@ class Timer {
                 return;
             }
             this.endTime = Date.now() + seconds * 1000;
-            this.totalSeconds = Math.max(this.totalSeconds, seconds);
         } else {
-            this.totalSeconds = seconds;
             this.syncInputsToTime(seconds);
-            this.presetBtns.forEach(b => b.classList.remove('active'));
         }
-        this.updateDisplay(seconds, !this.isRunning && !this.isPaused);
+        this.updateDisplay(seconds);
     }
 
     selectPreset(seconds, btn) {
@@ -608,9 +611,10 @@ class Timer {
         this.timeDisplay.textContent = str;
         document.title = `${str} - Musical Break Timer`;
 
-        if (this.timeSlider) {
-            this.timeSlider.max = Math.max(10800, seconds);
+        if (this.timeSlider && !this.sliderDragging) {
+            this.timeSlider.max = this.totalSeconds;
             this.timeSlider.value = seconds;
+            this.timeSlider.disabled = this.totalSeconds <= 0;
         }
 
         // Ring progress
