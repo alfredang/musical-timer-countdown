@@ -15,6 +15,7 @@ class Timer {
         };
         this.inputSection = document.getElementById('input-section');
         this.presetBtns = document.querySelectorAll('.preset-btn');
+        this.timeSlider = document.getElementById('time-slider');
 
         // Sound Elements
         this.volumeSlider = document.getElementById('volume-slider');
@@ -225,6 +226,11 @@ class Timer {
             });
         });
 
+        // Time slider: drag forward/backward to adjust time (also while running)
+        this.timeSlider.addEventListener('input', (e) => {
+            this.adjustTime(parseInt(e.target.value));
+        });
+
         // Manual Input Changes
         Object.values(this.inputInputs).forEach(input => {
             input.addEventListener('input', () => this.handleInputChange());
@@ -391,6 +397,24 @@ class Timer {
         this.inputInputs.s.value = s.toString().padStart(2, '0');
 
         this.handleInputChange();
+    }
+
+    adjustTime(seconds) {
+        if (this.isAlarming) return;
+        this.remainingSeconds = seconds;
+        if (this.isRunning) {
+            if (seconds <= 0) {
+                this.complete();
+                return;
+            }
+            this.endTime = Date.now() + seconds * 1000;
+            this.totalSeconds = Math.max(this.totalSeconds, seconds);
+        } else {
+            this.totalSeconds = seconds;
+            this.syncInputsToTime(seconds);
+            this.presetBtns.forEach(b => b.classList.remove('active'));
+        }
+        this.updateDisplay(seconds, !this.isRunning && !this.isPaused);
     }
 
     selectPreset(seconds, btn) {
@@ -591,6 +615,11 @@ class Timer {
         const str = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
         this.timeDisplay.textContent = str;
         document.title = `${str} - Musical Break Timer`;
+
+        if (this.timeSlider) {
+            this.timeSlider.max = Math.max(10800, seconds);
+            this.timeSlider.value = seconds;
+        }
 
         // Ring progress
         if (this.totalSeconds > 0 && !isPreview) {
