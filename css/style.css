@@ -6,7 +6,7 @@
     --accent-color: #60a5fa;
     --danger-color: #ef4444;
     --ring-bg: #1e293b;
-    --ring-active: #3b82f6;
+    --ring-active: var(--danger-color);
     --font-main: 'Inter', sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
     --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -128,7 +128,7 @@ h1 {
     stroke-dashoffset: 0;
     transition: stroke-dashoffset 0.1s linear;
     stroke-linecap: round;
-    filter: drop-shadow(0 0 6px var(--primary-color));
+    filter: drop-shadow(0 0 6px var(--ring-active));
 }
 
 .timer-display {
@@ -142,7 +142,6 @@ h1 {
     font-weight: 700;
     line-height: 1;
     letter-spacing: -0.05em;
-    color: var(--danger-color);
     text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
