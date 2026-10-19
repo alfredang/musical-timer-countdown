@@ -11,6 +11,8 @@ A sleek, modern countdown timer built with vanilla HTML, CSS, and JavaScript. De
 
 [**Live Demo**](https://alfredang.github.io/musical-timer-countdown/)
 
+![Musical Break Timer — home screen](screenshot.png)
+
 [**User Guide**](https://alfredang.github.io/musical-timer-countdown/docs/)
 
 ## Features
@@ -18,6 +20,7 @@ A sleek, modern countdown timer built with vanilla HTML, CSS, and JavaScript. De
 ### Timer Functionality
 - **Preset Times**: Quick-start buttons for 10m, 15m, 30m, 45m, 1h, 1h 15m, and 1h 30m
 - **Progress Slider**: Shows time elapsed; drag it left to reduce the time remaining, even while the timer is running
+- **Break Label**: A flashing label below the countdown — "Lunch Break" for 1h or 1h 15m, "Tea Break" for any other duration
 - **Manual Input**: Enter custom hours, minutes, and seconds
 - **Accurate Timing**: Uses `Date.now()` for drift-free countdown accuracy
 - **Visual Progress Ring**: Animated circular progress indicator shows remaining time
@@ -28,7 +31,7 @@ A sleek, modern countdown timer built with vanilla HTML, CSS, and JavaScript. De
 - **3 Built-in Alarm Sounds**: Choose from Dream, Inspire, or Wing
 - **Custom MP3 Upload**: Upload your own MP3 file (up to 5MB) as a custom alarm sound
 - **Continuous Alert**: Alarm loops until manually stopped when timer reaches zero
-- **Mute Toggle**: Mute or unmute the alarm sound
+- **Silent Mode**: Visual-only alert with no sound
 - **Mute Toggle**: Quick mute/unmute button
 - **Preview Sound**: Test your selected alarm sound before starting
 
@@ -73,6 +76,7 @@ musical-timer-countdown/
 │   ├── image1.jpeg     # Timer interface preview
 │   ├── image2.jpeg     # Settings panel preview
 │   └── sounds/         # Built-in audio files
+├── screenshot.png      # App screenshot used in this README
 ├── docs/
 │   └── index.html      # User guide (GitHub Pages)
 └── README.md

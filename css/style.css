@@ -145,6 +145,20 @@ h1 {
     text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
+.break-label {
+    margin-top: 0.75rem;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #fbbf24;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    animation: flash 1s infinite;
+}
+
+.break-label.hidden {
+    display: none;
+}
+
 .status-text {
     margin-top: 0.5rem;
     font-size: 1rem;
@@ -421,6 +435,10 @@ footer {
 
     .status-text {
         font-size: 0.875rem;
+    }
+
+    .break-label {
+        font-size: 1.1rem;
     }
 
     .time-inputs {

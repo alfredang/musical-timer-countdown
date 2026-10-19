@@ -3,6 +3,7 @@ class Timer {
         // DOM Elements
         this.timeDisplay = document.getElementById('time-display');
         this.timerStatus = document.getElementById('timer-status');
+        this.breakLabel = document.getElementById('break-label');
         this.progressRing = document.querySelector('.progress-ring__circle');
         this.startBtn = document.getElementById('start-btn');
         this.pauseBtn = document.getElementById('pause-btn');
@@ -629,12 +630,24 @@ class Timer {
             this.paintSlider();
         }
 
+        this.updateBreakLabel();
+
         // Ring progress
         if (this.totalSeconds > 0 && !isPreview) {
             const percent = (seconds / this.totalSeconds) * 100;
             this.setProgress(percent);
         } else if (isPreview) {
             this.setProgress(100);
+        }
+    }
+
+    updateBreakLabel() {
+        // 1h or 1h 15m is a lunch break; any other duration is a tea break
+        const show = this.totalSeconds > 0 && !this.isAlarming;
+        this.breakLabel.classList.toggle('hidden', !show);
+        if (show) {
+            const isLunch = this.totalSeconds === 3600 || this.totalSeconds === 4500;
+            this.breakLabel.textContent = isLunch ? 'Lunch Break' : 'Tea Break';
         }
     }
 
@@ -668,6 +681,7 @@ class Timer {
             this.startBtn.disabled = false;
             this.pauseBtn.disabled = true;
             this.timerStatus.textContent = "Time's Up!";
+            this.breakLabel.classList.add('hidden');
             this.timerStatus.style.color = "#ef4444";
             document.title = "Time's Up!";
         }
