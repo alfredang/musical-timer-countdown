@@ -21,7 +21,7 @@ A sleek, modern countdown timer built with vanilla HTML, CSS, and JavaScript. De
 - **Preset Times**: Quick-start buttons for 10m, 15m, 30m, 45m, 1h, 1h 15m, and 1h 30m
 - **Progress Slider**: Shows time elapsed; drag it left to reduce the time remaining, even while the timer is running
 - **Break Label**: A flashing label below the countdown — "Lunch Break" for 1h or 1h 15m, "Tea Break" for any other duration
-- **Manual Input**: Enter custom hours, minutes, and seconds
+- **Custom Time**: Press **Custom** to set any duration in hours and minutes
 - **Accurate Timing**: Uses `Date.now()` for drift-free countdown accuracy
 - **Visual Progress Ring**: Animated circular progress indicator shows remaining time
 - **Pause & Resume**: Pause the timer and resume from where you left off
@@ -44,7 +44,7 @@ A sleek, modern countdown timer built with vanilla HTML, CSS, and JavaScript. De
 
 ### Setting a Timer
 1. **Using Presets**: Click any preset button (10m, 15m, 30m, 45m, 1h, 1h 15m, 1h 30m)
-2. **Manual Entry**: Type your desired time in the HR:MIN:SEC input fields
+2. **Custom Time**: Press **Custom**, then type your time in the HR:MIN fields
 
 ### Timer Controls
 - **Start**: Begins the countdown
@@ -57,7 +57,7 @@ A sleek, modern countdown timer built with vanilla HTML, CSS, and JavaScript. De
 - Click **Stop Alarm** to silence the alarm and reset
 
 ### Customizing Settings
-1. Click the **gear icon** (top right) to open Settings
+1. Click the **gear icon** (right of the Reset button) to open Settings
 2. **Alarm Sound**: Select from built-in sounds or choose "Custom" to upload your own MP3
 3. **Custom Upload**: Click "Upload MP3" to select a file (max 5MB)
 4. **Color Theme**: Choose from 6 beautiful color schemes

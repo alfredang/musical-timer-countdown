@@ -11,11 +11,11 @@ class Timer {
         this.stopAlarmBtn = document.getElementById('stop-alarm-btn');
         this.inputInputs = {
             h: document.getElementById('input-hours'),
-            m: document.getElementById('input-minutes'),
-            s: document.getElementById('input-seconds')
+            m: document.getElementById('input-minutes')
         };
         this.inputSection = document.getElementById('input-section');
-        this.presetBtns = document.querySelectorAll('.preset-btn');
+        this.presetBtns = document.querySelectorAll('.preset-btn[data-time]');
+        this.customTimeBtn = document.getElementById('custom-time-btn');
         this.timeSlider = document.getElementById('time-slider');
 
         // Sound Elements
@@ -225,6 +225,9 @@ class Timer {
             });
         });
 
+        // Custom time: reveal the HR:MIN inputs
+        this.customTimeBtn.addEventListener('click', () => this.toggleCustomInput());
+
         // Time slider: drag forward/backward to adjust time (also while running)
         this.timeSlider.addEventListener('input', (e) => {
             this.adjustTime(Math.round(parseFloat(e.target.value)));
@@ -236,7 +239,12 @@ class Timer {
 
         // Manual Input Changes
         Object.values(this.inputInputs).forEach(input => {
-            input.addEventListener('input', () => this.handleInputChange());
+            input.addEventListener('focus', () => input.select());
+            input.addEventListener('input', () => {
+                // Keep at most two digits (typing over "00" gives "20", not "0020")
+                if (input.value.length > 2) input.value = input.value.slice(-2);
+                this.handleInputChange();
+            });
             input.addEventListener('change', () => this.validateInputs());
         });
 
@@ -360,9 +368,8 @@ class Timer {
     handleInputChange() {
         const h = parseInt(this.inputInputs.h.value) || 0;
         const m = parseInt(this.inputInputs.m.value) || 0;
-        const s = parseInt(this.inputInputs.s.value) || 0;
 
-        const total = (h * 3600) + (m * 60) + s;
+        const total = (h * 3600) + (m * 60);
 
         // Update internal state so start() uses the new values
         this.totalSeconds = total;
@@ -377,13 +384,8 @@ class Timer {
     validateInputs() {
         let h = parseInt(this.inputInputs.h.value) || 0;
         let m = parseInt(this.inputInputs.m.value) || 0;
-        let s = parseInt(this.inputInputs.s.value) || 0;
 
-        // Clamping logic if needed, or simple rollover
-        if (s > 59) {
-            m += Math.floor(s / 60);
-            s = s % 60;
-        }
+        // Roll minutes over into hours
         if (m > 59) {
             h += Math.floor(m / 60);
             m = m % 60;
@@ -391,7 +393,6 @@ class Timer {
 
         this.inputInputs.h.value = h.toString().padStart(2, '0');
         this.inputInputs.m.value = m.toString().padStart(2, '0');
-        this.inputInputs.s.value = s.toString().padStart(2, '0');
 
         this.handleInputChange();
     }
@@ -422,12 +423,11 @@ class Timer {
         // Update Inputs to match preset
         const h = Math.floor(seconds / 3600);
         const m = Math.floor((seconds % 3600) / 60);
-        const s = seconds % 60;
 
         this.inputInputs.h.value = h.toString().padStart(2, '0');
         this.inputInputs.m.value = m.toString().padStart(2, '0');
-        this.inputInputs.s.value = s.toString().padStart(2, '0');
 
+        this.setCustomInputVisible(false);
         this.updateDisplay(seconds);
 
         // Visuals
@@ -442,8 +442,7 @@ class Timer {
         if (this.remainingSeconds === 0 && !this.isPaused) {
             const h = parseInt(this.inputInputs.h.value) || 0;
             const m = parseInt(this.inputInputs.m.value) || 0;
-            const s = parseInt(this.inputInputs.s.value) || 0;
-            const total = (h * 3600) + (m * 60) + s;
+            const total = (h * 3600) + (m * 60);
 
             if (total === 0) return; // Don't start 0
 
@@ -507,17 +506,29 @@ class Timer {
     syncInputsToTime(seconds) {
         const h = Math.floor(seconds / 3600);
         const m = Math.floor((seconds % 3600) / 60);
-        const s = seconds % 60;
 
         if (seconds === 0) {
             this.inputInputs.h.value = '';
             this.inputInputs.m.value = '';
-            this.inputInputs.s.value = '';
         } else {
-            this.inputInputs.h.value = h > 0 ? h.toString().padStart(2, '0') : '';
-            this.inputInputs.m.value = (m > 0 || h > 0) ? m.toString().padStart(2, '0') : '';
-            this.inputInputs.s.value = s.toString().padStart(2, '0');
+            this.inputInputs.h.value = h.toString().padStart(2, '0');
+            this.inputInputs.m.value = m.toString().padStart(2, '0');
         }
+    }
+
+    toggleCustomInput() {
+        const open = this.inputSection.classList.contains('hidden');
+        this.setCustomInputVisible(open);
+        if (open) {
+            this.presetBtns.forEach(b => b.classList.remove('active'));
+            if (!this.isRunning) this.inputInputs.h.focus();
+        }
+    }
+
+    setCustomInputVisible(visible) {
+        this.inputSection.classList.toggle('hidden', !visible);
+        this.customTimeBtn.classList.toggle('active', visible);
+        this.customTimeBtn.setAttribute('aria-expanded', String(visible));
     }
 
     complete() {

@@ -18,13 +18,6 @@
         <header>
             <h1>Musical Break Timer</h1>
             <p id="motivational-quote"></p>
-            <button id="settings-btn" class="icon-button" aria-label="Settings">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="3"></circle>
-                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-                </svg>
-            </button>
         </header>
 
         <!-- Settings Modal -->
@@ -106,26 +99,6 @@
                 </div>
             </div>
 
-            <!-- Manual Input (Hidden when running) -->
-            <div class="input-section" id="input-section">
-                <div class="time-inputs">
-                    <div class="input-group">
-                        <input type="number" id="input-hours" min="0" max="99" placeholder="0">
-                        <label>HR</label>
-                    </div>
-                    <div class="separator">:</div>
-                    <div class="input-group">
-                        <input type="number" id="input-minutes" min="0" max="59" placeholder="0">
-                        <label>MIN</label>
-                    </div>
-                    <div class="separator">:</div>
-                    <div class="input-group">
-                        <input type="number" id="input-seconds" min="0" max="59" placeholder="0">
-                        <label>SEC</label>
-                    </div>
-                </div>
-            </div>
-
             <!-- Presets -->
             <div class="presets">
                 <button class="preset-btn" data-time="600">10m</button>
@@ -135,6 +108,23 @@
                 <button class="preset-btn" data-time="3600">1h</button>
                 <button class="preset-btn" data-time="4500">1h 15m</button>
                 <button class="preset-btn" data-time="5400">1h 30m</button>
+                <button id="custom-time-btn" class="preset-btn custom-time-btn" aria-expanded="false"
+                    aria-controls="input-section">Custom</button>
+            </div>
+
+            <!-- Custom time input (shown after pressing Custom) -->
+            <div class="input-section hidden" id="input-section">
+                <div class="time-inputs">
+                    <div class="input-group">
+                        <input type="number" id="input-hours" min="0" max="99" placeholder="00" aria-label="Hours">
+                        <label for="input-hours">HR</label>
+                    </div>
+                    <div class="separator">:</div>
+                    <div class="input-group">
+                        <input type="number" id="input-minutes" min="0" max="59" placeholder="00" aria-label="Minutes">
+                        <label for="input-minutes">MIN</label>
+                    </div>
+                </div>
             </div>
 
             <!-- Controls -->
@@ -142,6 +132,13 @@
                 <button id="start-btn" class="control-btn primary">Start</button>
                 <button id="pause-btn" class="control-btn secondary" disabled>Pause</button>
                 <button id="reset-btn" class="control-btn destr">Reset</button>
+                <button id="settings-btn" class="control-btn settings-control" title="Settings" aria-label="Settings">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                </button>
                 <button id="stop-alarm-btn" class="control-btn stop hidden">Stop Alarm</button>
             </div>
 
