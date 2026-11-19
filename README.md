@@ -20,7 +20,7 @@ A sleek, modern countdown timer built with vanilla HTML, CSS, and JavaScript. De
 ### Timer Functionality
 - **Preset Times**: Quick-start buttons for 10m, 15m, 30m, 45m, 1h, 1h 15m, and 1h 30m
 - **Progress Slider**: Shows time elapsed; drag it left to reduce the time remaining, even while the timer is running
-- **Break Label**: A flashing label below the countdown — "Lunch Break" for 1h or 1h 15m, "Tea Break" for any other duration
+- **Editable Break Label**: A flashing "Break Time" label below the countdown — click it to type your own text (e.g. "Lunch Break"), press Enter to save or Esc to cancel
 - **Custom Time**: Press **Custom** to set any duration in hours and minutes
 - **Accurate Timing**: Uses `Date.now()` for drift-free countdown accuracy
 - **Visual Progress Ring**: Animated circular progress indicator shows remaining time
@@ -37,7 +37,7 @@ A sleek, modern countdown timer built with vanilla HTML, CSS, and JavaScript. De
 
 ### Customization
 - **6 Color Themes**: Default (Blue), Ocean, Forest, Sunset, Purple, and Rose
-- **Settings Persist**: Your sound, theme, and custom audio preferences are saved in localStorage
+- **Settings Persist**: Your sound, theme, custom audio, and break label text are saved in localStorage
 - **Mobile Responsive**: Fully optimized for all screen sizes
 
 ## How to Use
@@ -50,6 +50,11 @@ A sleek, modern countdown timer built with vanilla HTML, CSS, and JavaScript. De
 - **Start**: Begins the countdown
 - **Pause**: Pauses the timer (button changes to "Resume")
 - **Reset**: Clears the timer and all inputs back to 00:00:00
+
+### Changing the Break Label
+1. Pick a time so the "Break Time" label appears below the countdown
+2. Click the label and type your own text, such as "Lunch Break" (up to 30 characters)
+3. Press **Enter** or click away to save; press **Esc** to cancel. Clearing the text restores "Break Time"
 
 ### When Timer Completes
 - The display shows "Time's Up!" with a flashing animation

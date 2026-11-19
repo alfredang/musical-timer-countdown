@@ -74,6 +74,7 @@ class Timer {
     init() {
         this.loadSettings();
         this.setupRing();
+        this.initBreakLabel();
         this.addEventListeners();
         this.updateDisplay(0);
         this.loadAudio();
@@ -653,13 +654,34 @@ class Timer {
     }
 
     updateBreakLabel() {
-        // 1h or 1h 15m is a lunch break; any other duration is a tea break
         const show = this.totalSeconds > 0 && !this.isAlarming;
         this.breakLabel.classList.toggle('hidden', !show);
-        if (show) {
-            const isLunch = this.totalSeconds === 3600 || this.totalSeconds === 4500;
-            this.breakLabel.textContent = isLunch ? 'Lunch Break' : 'Tea Break';
+        // Never overwrite the label while the user is typing in it
+        if (show && document.activeElement !== this.breakLabel) {
+            this.breakLabel.textContent = this.breakLabelText;
         }
+    }
+
+    initBreakLabel() {
+        const DEFAULT_LABEL = 'Break Time';
+        this.breakLabelText = this.safeStorageGet('timerBreakLabel') || DEFAULT_LABEL;
+
+        this.breakLabel.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                this.breakLabel.blur();
+            } else if (e.key === 'Escape') {
+                this.breakLabel.textContent = this.breakLabelText;
+                this.breakLabel.blur();
+            }
+        });
+
+        this.breakLabel.addEventListener('blur', () => {
+            const text = this.breakLabel.textContent.replace(/\s+/g, ' ').trim().slice(0, 30);
+            this.breakLabelText = text || DEFAULT_LABEL;
+            this.breakLabel.textContent = this.breakLabelText;
+            this.safeStorageSet('timerBreakLabel', this.breakLabelText);
+        });
     }
 
     updateUIState(state) {

@@ -155,6 +155,26 @@ h1 {
     animation: flash 1s infinite;
 }
 
+.break-label {
+    padding: 0.1rem 0.6rem;
+    border-radius: 0.5rem;
+    border: 1px dashed transparent;
+    outline: none;
+    cursor: text;
+    max-width: 90%;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.break-label:hover {
+    border-color: rgba(251, 191, 36, 0.5);
+}
+
+.break-label:focus {
+    border-color: #fbbf24;
+    animation: none;
+}
+
 .break-label.hidden {
     display: none;
 }
