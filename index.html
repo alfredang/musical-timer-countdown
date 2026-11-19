@@ -8,18 +8,18 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&family=Exo+2:wght@400;600;700&family=Quicksand:wght@500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
+    <div class="cyber-bg" aria-hidden="true">
+        <span class="sound-wave sound-wave--a"></span>
+        <span class="sound-wave sound-wave--b"></span>
+        <span class="sound-wave sound-wave--c"></span>
+    </div>
     <div class="app-container">
-        <header>
-            <h1>Musical Break Timer</h1>
-            <p id="motivational-quote"></p>
-        </header>
-
         <!-- Settings Modal -->
         <div id="settings-modal" class="modal">
             <div class="modal-content">
@@ -54,29 +54,29 @@
                 <div class="settings-section">
                     <h3>Color Theme</h3>
                     <div class="theme-options">
-                        <button class="theme-option active" data-theme="default" style="--preview-bg: #0f172a; --preview-accent: #3b82f6;">
+                        <button class="theme-option active" data-theme="default" style="--preview-bg: #05060f; --preview-accent: #00f0ff;">
                             <span class="theme-preview"></span>
-                            <span>Default</span>
+                            <span>Cyberpunk</span>
                         </button>
-                        <button class="theme-option" data-theme="ocean" style="--preview-bg: #0c4a6e; --preview-accent: #06b6d4;">
+                        <button class="theme-option" data-theme="standard" style="--preview-bg: #0f172a; --preview-accent: #3b82f6;">
                             <span class="theme-preview"></span>
-                            <span>Ocean</span>
+                            <span>Standard</span>
                         </button>
-                        <button class="theme-option" data-theme="forest" style="--preview-bg: #14532d; --preview-accent: #22c55e;">
+                        <button class="theme-option" data-theme="space" style="--preview-bg: #07051a; --preview-accent: #a78bfa;">
+                            <span class="theme-preview"></span>
+                            <span>Space</span>
+                        </button>
+                        <button class="theme-option" data-theme="forest" style="--preview-bg: #06180d; --preview-accent: #4ade80;">
                             <span class="theme-preview"></span>
                             <span>Forest</span>
                         </button>
-                        <button class="theme-option" data-theme="sunset" style="--preview-bg: #431407; --preview-accent: #f97316;">
+                        <button class="theme-option" data-theme="ocean" style="--preview-bg: #03283f; --preview-accent: #22d3ee;">
+                            <span class="theme-preview"></span>
+                            <span>Ocean</span>
+                        </button>
+                        <button class="theme-option" data-theme="sunset" style="--preview-bg: #2a0a3a; --preview-accent: #ff5fa2;">
                             <span class="theme-preview"></span>
                             <span>Sunset</span>
-                        </button>
-                        <button class="theme-option" data-theme="purple" style="--preview-bg: #2e1065; --preview-accent: #a855f7;">
-                            <span class="theme-preview"></span>
-                            <span>Purple</span>
-                        </button>
-                        <button class="theme-option" data-theme="rose" style="--preview-bg: #4c0519; --preview-accent: #f43f5e;">
-                            <span class="theme-preview"></span>
-                            <span>Rose</span>
                         </button>
                     </div>
                 </div>
@@ -91,7 +91,14 @@
                         r="230" cx="250" cy="250" />
                     <circle class="progress-ring__circle" stroke="currentColor" stroke-width="12" fill="transparent"
                         r="230" cx="250" cy="250" />
+                    <g class="ring-hud" fill="transparent" aria-hidden="true">
+                        <circle class="ring-hud__ticks" r="245" cx="250" cy="250" pathLength="360"
+                            stroke-dasharray="1 5" />
+                        <circle class="ring-hud__inner" r="216" cx="250" cy="250" pathLength="360"
+                            stroke-dasharray="70 12 4 12 4 18" />
+                    </g>
                 </svg>
+                <div class="ring-beam" aria-hidden="true"></div>
                 <div class="timer-display">
                     <div id="time-display" class="time-text">00:00:00</div>
                     <div id="break-label" class="break-label hidden" contenteditable="plaintext-only" spellcheck="false"

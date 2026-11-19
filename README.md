@@ -36,7 +36,7 @@ A sleek, modern countdown timer built with vanilla HTML, CSS, and JavaScript. De
 - **Preview Sound**: Test your selected alarm sound before starting
 
 ### Customization
-- **6 Color Themes**: Default (Blue), Ocean, Forest, Sunset, Purple, and Rose
+- **6 Themes**: Cyberpunk (default), Standard, Space, Forest, Ocean, and Sunset, each with its own look and animated background
 - **Settings Persist**: Your sound, theme, custom audio, and break label text are saved in localStorage
 - **Mobile Responsive**: Fully optimized for all screen sizes
 
@@ -65,7 +65,7 @@ A sleek, modern countdown timer built with vanilla HTML, CSS, and JavaScript. De
 1. Click the **gear icon** (right of the Reset button) to open Settings
 2. **Alarm Sound**: Select from built-in sounds or choose "Custom" to upload your own MP3
 3. **Custom Upload**: Click "Upload MP3" to select a file (max 5MB)
-4. **Color Theme**: Choose from 6 beautiful color schemes
+4. **Theme**: Choose from 6 themes
 5. Settings are automatically saved
 
 ## Project Structure

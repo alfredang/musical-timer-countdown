@@ -1,16 +1,25 @@
 :root {
-    --bg-color: #0f172a;
-    --text-color: #f8fafc;
-    --primary-color: #3b82f6;
-    --secondary-color: #1e293b;
-    --accent-color: #60a5fa;
-    --danger-color: #ef4444;
-    --ring-bg: #1e293b;
-    --ring-active: #3b82f6;
-    --font-main: 'Inter', sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
+    --bg-color: #05060f;
+    --text-color: #e6fbff;
+    --primary-color: #00f0ff;
+    --secondary-color: #0d1326;
+    --accent-color: #ff2a6d;
+    --danger-color: #ff003c;
+    --ring-bg: #111a33;
+    --ring-active: #00f0ff;
+    --neon-yellow: #fcee0a;
+    --neon-green: #39ff14;
+    --muted: #8aa4bd;
+    --on-primary: #05060f;
+    --line: color-mix(in srgb, var(--primary-color) 35%, transparent);
+    --line-soft: color-mix(in srgb, var(--primary-color) 16%, transparent);
+    --tint: color-mix(in srgb, var(--primary-color) 12%, transparent);
+    --cut: 10px;
+    --font-main: 'Rajdhani', 'Segoe UI', sans-serif;
+    --font-display: 'Orbitron', 'Rajdhani', sans-serif;
+    --font-mono: 'Share Tech Mono', 'JetBrains Mono', monospace;
     --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-glow: 0 0 15px rgba(59, 130, 246, 0.5);
+    --shadow-glow: 0 0 15px color-mix(in srgb, var(--primary-color) 50%, transparent);
 }
 
 * {
@@ -21,7 +30,16 @@
 
 body {
     font-family: var(--font-main);
+    font-size: 1.05rem;
     background-color: var(--bg-color);
+    /* glow from the top, then a faint circuit grid */
+    background-image:
+        radial-gradient(ellipse at 50% 0%, color-mix(in srgb, var(--primary-color) 16%, transparent), transparent 60%),
+        radial-gradient(ellipse at 50% 110%, color-mix(in srgb, var(--accent-color) 14%, transparent), transparent 55%),
+        linear-gradient(var(--line-soft) 1px, transparent 1px),
+        linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
+    background-size: auto, auto, 40px 40px, 40px 40px;
+    background-attachment: fixed;
     color: var(--text-color);
     display: flex;
     justify-content: center;
@@ -30,15 +48,120 @@ body {
     transition: background-color 0.3s, color 0.3s;
 }
 
+/* CRT scanlines over the whole page */
+body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.16) 0 1px, transparent 1px 3px);
+    pointer-events: none;
+    z-index: 2000;
+}
+
+/* Animated backdrop: a green heartbeat trace and sound waves travelling left to right over a neon grid floor */
+.cyber-bg {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.cyber-bg::before {
+    content: '';
+    position: absolute;
+    left: -50%;
+    right: -50%;
+    bottom: 0;
+    height: 45vh;
+    background-image:
+        linear-gradient(var(--primary-color) 2px, transparent 2px),
+        linear-gradient(90deg, var(--primary-color) 2px, transparent 2px);
+    background-size: 60px 60px;
+    transform: perspective(320px) rotateX(62deg);
+    transform-origin: 50% 100%;
+    opacity: 0.4;
+    -webkit-mask: linear-gradient(to bottom, transparent, #000 75%);
+    mask: linear-gradient(to bottom, transparent, #000 75%);
+    animation: grid-rush 1.6s linear infinite;
+}
+
+.cyber-bg::after {
+    content: '';
+    position: absolute;
+}
+
+/* Each wave is a mask over a solid green band, so the colour follows the theme */
+.sound-wave {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: var(--wave-h);
+    margin-top: calc(var(--wave-h) / -2);
+    background: var(--neon-green);
+    -webkit-mask: var(--wave-img) repeat-x 0 50% / var(--wave-w) 100%;
+    mask: var(--wave-img) repeat-x 0 50% / var(--wave-w) 100%;
+    animation: wave-flow var(--wave-speed) linear infinite, wave-pulse var(--wave-beat) ease-in-out infinite alternate;
+}
+
+/* the lead trace is a heartbeat (ECG) line; the two behind it are softer sound waves */
+.sound-wave--a {
+    --wave-img: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 600 200%22 preserveAspectRatio=%22none%22%3E%3Cg fill=%22none%22 stroke=%22%23000%22 stroke-linejoin=%22round%22 stroke-linecap=%22round%22%3E%3Cpath d=%22M0 100 L170 100 Q186 78 202 100 L228 100 L240 114 L258 10 L278 184 L292 100 L322 100 Q350 58 378 100 L600 100%22 stroke-width=%2212%22 stroke-opacity=%220.22%22 vector-effect=%22non-scaling-stroke%22/%3E%3Cpath d=%22M0 100 L170 100 Q186 78 202 100 L228 100 L240 114 L258 10 L278 184 L292 100 L322 100 Q350 58 378 100 L600 100%22 stroke-width=%223%22 vector-effect=%22non-scaling-stroke%22/%3E%3C/g%3E%3C/svg%3E");
+    --wave-w: 600px;
+    --wave-h: 44vh;
+    --wave-speed: 4s;
+    opacity: 0.75;
+    animation: wave-flow var(--wave-speed) linear infinite;
+}
+
+.sound-wave--b {
+    --wave-img: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 900 200%22 preserveAspectRatio=%22none%22%3E%3Cg fill=%22none%22 stroke=%22%23000%22 stroke-linejoin=%22round%22 stroke-linecap=%22round%22%3E%3Cpath d=%22M0 100.0 L6 110.4 L12 120.9 L18 131.0 L24 140.2 L30 148.1 L36 154.1 L42 158.0 L48 159.3 L54 158.0 L60 154.0 L66 147.3 L72 138.2 L78 126.9 L84 114.0 L90 100.0 L96 85.5 L102 71.1 L108 57.5 L114 45.4 L120 35.4 L126 28.0 L132 23.7 L138 22.7 L144 25.2 L150 31.0 L156 40.1 L162 52.1 L168 66.5 L174 82.7 L180 100.0 L186 117.6 L192 134.7 L198 150.5 L204 164.2 L210 175.3 L216 183.2 L222 187.5 L228 187.9 L234 184.4 L240 177.1 L246 166.4 L252 152.6 L258 136.5 L264 118.7 L270 100.0 L276 81.3 L282 63.4 L288 47.1 L294 33.2 L300 22.3 L306 14.9 L312 11.2 L318 11.5 L324 15.7 L330 23.6 L336 34.7 L342 48.7 L348 64.7 L354 82.1 L360 100.0 L366 117.7 L372 134.3 L378 149.1 L384 161.6 L390 171.0 L396 177.2 L402 179.9 L408 178.9 L414 174.6 L420 167.0 L426 156.8 L432 144.3 L438 130.2 L444 115.2 L450 100.0 L456 85.3 L462 71.7 L468 59.8 L474 50.1 L480 43.0 L486 38.6 L492 37.1 L498 38.4 L504 42.4 L510 48.7 L516 57.0 L522 66.8 L528 77.6 L534 88.8 L540 100.0 L546 110.6 L552 120.1 L558 128.3 L564 134.7 L570 139.3 L576 141.8 L582 142.3 L588 141.0 L594 137.9 L600 133.3 L606 127.6 L612 121.1 L618 114.0 L624 106.9 L630 100.0 L636 93.6 L642 88.0 L648 83.3 L654 79.7 L660 77.3 L666 76.0 L672 76.0 L678 76.9 L684 78.8 L690 81.4 L696 84.6 L702 88.3 L708 92.1 L714 96.1 L720 100.0 L726 103.8 L732 107.4 L738 110.9 L744 114.1 L750 116.9 L756 119.2 L762 120.8 L768 121.6 L774 121.5 L780 120.4 L786 118.2 L792 115.0 L798 110.8 L804 105.7 L810 100.0 L816 93.8 L822 87.3 L828 81.0 L834 75.0 L840 69.8 L846 65.6 L852 62.7 L858 61.3 L864 61.7 L870 64.0 L876 68.1 L882 73.9 L888 81.4 L894 90.2 L900 100.0%22 stroke-width=%229%22 stroke-opacity=%220.22%22 vector-effect=%22non-scaling-stroke%22/%3E%3Cpath d=%22M0 100.0 L6 110.4 L12 120.9 L18 131.0 L24 140.2 L30 148.1 L36 154.1 L42 158.0 L48 159.3 L54 158.0 L60 154.0 L66 147.3 L72 138.2 L78 126.9 L84 114.0 L90 100.0 L96 85.5 L102 71.1 L108 57.5 L114 45.4 L120 35.4 L126 28.0 L132 23.7 L138 22.7 L144 25.2 L150 31.0 L156 40.1 L162 52.1 L168 66.5 L174 82.7 L180 100.0 L186 117.6 L192 134.7 L198 150.5 L204 164.2 L210 175.3 L216 183.2 L222 187.5 L228 187.9 L234 184.4 L240 177.1 L246 166.4 L252 152.6 L258 136.5 L264 118.7 L270 100.0 L276 81.3 L282 63.4 L288 47.1 L294 33.2 L300 22.3 L306 14.9 L312 11.2 L318 11.5 L324 15.7 L330 23.6 L336 34.7 L342 48.7 L348 64.7 L354 82.1 L360 100.0 L366 117.7 L372 134.3 L378 149.1 L384 161.6 L390 171.0 L396 177.2 L402 179.9 L408 178.9 L414 174.6 L420 167.0 L426 156.8 L432 144.3 L438 130.2 L444 115.2 L450 100.0 L456 85.3 L462 71.7 L468 59.8 L474 50.1 L480 43.0 L486 38.6 L492 37.1 L498 38.4 L504 42.4 L510 48.7 L516 57.0 L522 66.8 L528 77.6 L534 88.8 L540 100.0 L546 110.6 L552 120.1 L558 128.3 L564 134.7 L570 139.3 L576 141.8 L582 142.3 L588 141.0 L594 137.9 L600 133.3 L606 127.6 L612 121.1 L618 114.0 L624 106.9 L630 100.0 L636 93.6 L642 88.0 L648 83.3 L654 79.7 L660 77.3 L666 76.0 L672 76.0 L678 76.9 L684 78.8 L690 81.4 L696 84.6 L702 88.3 L708 92.1 L714 96.1 L720 100.0 L726 103.8 L732 107.4 L738 110.9 L744 114.1 L750 116.9 L756 119.2 L762 120.8 L768 121.6 L774 121.5 L780 120.4 L786 118.2 L792 115.0 L798 110.8 L804 105.7 L810 100.0 L816 93.8 L822 87.3 L828 81.0 L834 75.0 L840 69.8 L846 65.6 L852 62.7 L858 61.3 L864 61.7 L870 64.0 L876 68.1 L882 73.9 L888 81.4 L894 90.2 L900 100.0%22 stroke-width=%222.2%22 vector-effect=%22non-scaling-stroke%22/%3E%3C/g%3E%3C/svg%3E");
+    --wave-w: 900px;
+    --wave-h: 62vh;
+    --wave-speed: 20s;
+    --wave-beat: 2.1s;
+    opacity: 0.22;
+}
+
+.sound-wave--c {
+    --wave-img: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1600 200%22 preserveAspectRatio=%22none%22%3E%3Cg fill=%22none%22 stroke=%22%23000%22 stroke-linejoin=%22round%22 stroke-linecap=%22round%22%3E%3Cpath d=%22M0 100.0 L5 147.0 L10 177.2 L15 178.3 L20 149.0 L25 100.0 L30 49.8 L35 17.9 L40 17.2 L45 48.4 L50 100.0 L55 152.2 L60 184.9 L65 185.2 L70 152.8 L75 100.0 L80 47.1 L85 14.5 L90 14.6 L95 47.3 L100 100.0 L105 152.2 L110 184.0 L115 183.4 L120 151.2 L125 100.0 L130 49.8 L135 19.7 L140 20.7 L145 51.6 L150 100.0 L155 146.9 L160 174.7 L165 173.4 L170 144.5 L175 100.0 L180 57.3 L185 32.5 L190 34.2 L195 60.3 L200 100.0 L205 137.6 L210 159.0 L215 157.2 L220 134.2 L225 100.0 L230 68.1 L235 50.2 L240 52.1 L245 71.5 L250 100.0 L255 126.2 L260 140.5 L265 138.6 L270 122.8 L275 100.0 L280 79.4 L285 68.4 L290 70.1 L295 82.5 L300 100.0 L305 115.6 L310 123.9 L315 122.6 L320 113.2 L325 100.0 L330 88.1 L335 81.7 L340 82.4 L345 89.4 L350 100.0 L355 111.0 L360 118.6 L365 119.6 L370 112.7 L375 100.0 L380 85.8 L385 75.6 L390 74.2 L395 83.1 L400 100.0 L405 118.9 L410 132.2 L415 133.9 L420 122.1 L425 100.0 L430 75.7 L435 58.8 L440 57.0 L445 72.3 L450 100.0 L455 130.1 L460 150.5 L465 152.4 L470 133.5 L475 100.0 L480 64.2 L485 40.4 L490 38.6 L495 61.0 L500 100.0 L505 141.1 L510 168.0 L515 169.6 L520 143.9 L525 100.0 L530 54.4 L535 24.8 L540 23.6 L545 52.1 L550 100.0 L555 149.3 L560 180.6 L565 181.5 L570 150.9 L575 100.0 L580 48.3 L585 15.8 L590 15.4 L595 47.5 L600 100.0 L605 152.8 L610 185.6 L615 185.6 L620 152.9 L625 100.0 L630 47.4 L635 15.2 L640 15.7 L645 48.2 L650 100.0 L655 151.0 L660 181.8 L665 180.9 L670 149.4 L675 100.0 L680 51.8 L685 23.2 L690 24.5 L695 54.1 L700 100.0 L705 144.2 L710 170.0 L715 168.5 L720 141.4 L725 100.0 L730 60.7 L735 38.1 L740 39.8 L745 63.9 L750 100.0 L755 133.9 L760 152.9 L765 151.1 L770 130.4 L775 100.0 L780 71.9 L785 56.4 L790 58.3 L795 75.4 L800 100.0 L805 122.4 L810 134.5 L815 132.7 L820 119.2 L825 100.0 L830 82.8 L835 73.7 L840 75.2 L845 85.5 L850 100.0 L855 112.9 L860 119.9 L865 118.9 L870 111.2 L875 100.0 L880 89.4 L885 82.5 L890 81.9 L895 88.3 L900 100.0 L905 113.0 L910 122.2 L915 123.5 L920 115.4 L925 100.0 L930 82.8 L935 70.6 L940 68.9 L945 79.7 L950 100.0 L955 122.4 L960 138.1 L965 139.9 L970 125.8 L975 100.0 L980 71.9 L985 52.6 L990 50.7 L995 68.4 L1000 100.0 L1005 133.9 L1010 156.7 L1015 158.5 L1020 137.2 L1025 100.0 L1030 60.6 L1035 34.7 L1040 33.0 L1045 57.6 L1050 100.0 L1055 144.2 L1060 172.9 L1065 174.3 L1070 146.7 L1075 100.0 L1080 51.8 L1085 21.0 L1090 20.0 L1095 50.0 L1100 100.0 L1105 151.0 L1110 183.2 L1115 183.8 L1120 152.1 L1125 100.0 L1130 47.4 L1135 14.6 L1140 14.5 L1145 47.1 L1150 100.0 L1155 152.8 L1160 185.3 L1165 185.0 L1170 152.3 L1175 100.0 L1180 48.3 L1185 17.0 L1190 17.7 L1195 49.6 L1200 100.0 L1205 149.2 L1210 178.6 L1215 177.5 L1220 147.2 L1225 100.0 L1230 54.4 L1235 27.6 L1240 29.0 L1245 57.0 L1250 100.0 L1255 141.0 L1260 164.7 L1265 163.1 L1270 137.9 L1275 100.0 L1280 64.3 L1285 44.0 L1290 45.8 L1295 67.7 L1300 100.0 L1305 130.0 L1310 146.7 L1315 144.8 L1320 126.5 L1325 100.0 L1330 75.7 L1335 62.6 L1340 64.4 L1345 79.1 L1350 100.0 L1355 118.8 L1360 128.9 L1365 127.3 L1370 115.9 L1375 100.0 L1380 85.8 L1385 78.3 L1390 79.4 L1395 87.9 L1400 100.0 L1405 111.0 L1410 117.3 L1415 117.2 L1420 110.9 L1425 100.0 L1430 88.1 L1435 79.8 L1440 78.6 L1445 86.0 L1450 100.0 L1455 115.7 L1460 126.8 L1465 128.4 L1470 118.5 L1475 100.0 L1480 79.4 L1485 64.9 L1490 63.1 L1495 76.1 L1500 100.0 L1505 126.2 L1510 144.3 L1515 146.1 L1520 129.7 L1525 100.0 L1530 68.0 L1535 46.4 L1540 44.6 L1545 64.6 L1550 100.0 L1555 137.6 L1560 162.6 L1565 164.2 L1570 140.7 L1575 100.0 L1580 57.3 L1585 29.4 L1590 28.0 L1595 54.6 L1600 100.0%22 stroke-width=%229%22 stroke-opacity=%220.22%22 vector-effect=%22non-scaling-stroke%22/%3E%3Cpath d=%22M0 100.0 L5 147.0 L10 177.2 L15 178.3 L20 149.0 L25 100.0 L30 49.8 L35 17.9 L40 17.2 L45 48.4 L50 100.0 L55 152.2 L60 184.9 L65 185.2 L70 152.8 L75 100.0 L80 47.1 L85 14.5 L90 14.6 L95 47.3 L100 100.0 L105 152.2 L110 184.0 L115 183.4 L120 151.2 L125 100.0 L130 49.8 L135 19.7 L140 20.7 L145 51.6 L150 100.0 L155 146.9 L160 174.7 L165 173.4 L170 144.5 L175 100.0 L180 57.3 L185 32.5 L190 34.2 L195 60.3 L200 100.0 L205 137.6 L210 159.0 L215 157.2 L220 134.2 L225 100.0 L230 68.1 L235 50.2 L240 52.1 L245 71.5 L250 100.0 L255 126.2 L260 140.5 L265 138.6 L270 122.8 L275 100.0 L280 79.4 L285 68.4 L290 70.1 L295 82.5 L300 100.0 L305 115.6 L310 123.9 L315 122.6 L320 113.2 L325 100.0 L330 88.1 L335 81.7 L340 82.4 L345 89.4 L350 100.0 L355 111.0 L360 118.6 L365 119.6 L370 112.7 L375 100.0 L380 85.8 L385 75.6 L390 74.2 L395 83.1 L400 100.0 L405 118.9 L410 132.2 L415 133.9 L420 122.1 L425 100.0 L430 75.7 L435 58.8 L440 57.0 L445 72.3 L450 100.0 L455 130.1 L460 150.5 L465 152.4 L470 133.5 L475 100.0 L480 64.2 L485 40.4 L490 38.6 L495 61.0 L500 100.0 L505 141.1 L510 168.0 L515 169.6 L520 143.9 L525 100.0 L530 54.4 L535 24.8 L540 23.6 L545 52.1 L550 100.0 L555 149.3 L560 180.6 L565 181.5 L570 150.9 L575 100.0 L580 48.3 L585 15.8 L590 15.4 L595 47.5 L600 100.0 L605 152.8 L610 185.6 L615 185.6 L620 152.9 L625 100.0 L630 47.4 L635 15.2 L640 15.7 L645 48.2 L650 100.0 L655 151.0 L660 181.8 L665 180.9 L670 149.4 L675 100.0 L680 51.8 L685 23.2 L690 24.5 L695 54.1 L700 100.0 L705 144.2 L710 170.0 L715 168.5 L720 141.4 L725 100.0 L730 60.7 L735 38.1 L740 39.8 L745 63.9 L750 100.0 L755 133.9 L760 152.9 L765 151.1 L770 130.4 L775 100.0 L780 71.9 L785 56.4 L790 58.3 L795 75.4 L800 100.0 L805 122.4 L810 134.5 L815 132.7 L820 119.2 L825 100.0 L830 82.8 L835 73.7 L840 75.2 L845 85.5 L850 100.0 L855 112.9 L860 119.9 L865 118.9 L870 111.2 L875 100.0 L880 89.4 L885 82.5 L890 81.9 L895 88.3 L900 100.0 L905 113.0 L910 122.2 L915 123.5 L920 115.4 L925 100.0 L930 82.8 L935 70.6 L940 68.9 L945 79.7 L950 100.0 L955 122.4 L960 138.1 L965 139.9 L970 125.8 L975 100.0 L980 71.9 L985 52.6 L990 50.7 L995 68.4 L1000 100.0 L1005 133.9 L1010 156.7 L1015 158.5 L1020 137.2 L1025 100.0 L1030 60.6 L1035 34.7 L1040 33.0 L1045 57.6 L1050 100.0 L1055 144.2 L1060 172.9 L1065 174.3 L1070 146.7 L1075 100.0 L1080 51.8 L1085 21.0 L1090 20.0 L1095 50.0 L1100 100.0 L1105 151.0 L1110 183.2 L1115 183.8 L1120 152.1 L1125 100.0 L1130 47.4 L1135 14.6 L1140 14.5 L1145 47.1 L1150 100.0 L1155 152.8 L1160 185.3 L1165 185.0 L1170 152.3 L1175 100.0 L1180 48.3 L1185 17.0 L1190 17.7 L1195 49.6 L1200 100.0 L1205 149.2 L1210 178.6 L1215 177.5 L1220 147.2 L1225 100.0 L1230 54.4 L1235 27.6 L1240 29.0 L1245 57.0 L1250 100.0 L1255 141.0 L1260 164.7 L1265 163.1 L1270 137.9 L1275 100.0 L1280 64.3 L1285 44.0 L1290 45.8 L1295 67.7 L1300 100.0 L1305 130.0 L1310 146.7 L1315 144.8 L1320 126.5 L1325 100.0 L1330 75.7 L1335 62.6 L1340 64.4 L1345 79.1 L1350 100.0 L1355 118.8 L1360 128.9 L1365 127.3 L1370 115.9 L1375 100.0 L1380 85.8 L1385 78.3 L1390 79.4 L1395 87.9 L1400 100.0 L1405 111.0 L1410 117.3 L1415 117.2 L1420 110.9 L1425 100.0 L1430 88.1 L1435 79.8 L1440 78.6 L1445 86.0 L1450 100.0 L1455 115.7 L1460 126.8 L1465 128.4 L1470 118.5 L1475 100.0 L1480 79.4 L1485 64.9 L1490 63.1 L1495 76.1 L1500 100.0 L1505 126.2 L1510 144.3 L1515 146.1 L1520 129.7 L1525 100.0 L1530 68.0 L1535 46.4 L1540 44.6 L1545 64.6 L1550 100.0 L1555 137.6 L1560 162.6 L1565 164.2 L1570 140.7 L1575 100.0 L1580 57.3 L1585 29.4 L1590 28.0 L1595 54.6 L1600 100.0%22 stroke-width=%222.2%22 vector-effect=%22non-scaling-stroke%22/%3E%3C/g%3E%3C/svg%3E");
+    --wave-w: 1600px;
+    --wave-h: 26vh;
+    --wave-speed: 8s;
+    --wave-beat: 0.8s;
+    opacity: 0.25;
+}
+
+@keyframes wave-flow {
+    to {
+        -webkit-mask-position: var(--wave-w) 50%;
+        mask-position: var(--wave-w) 50%;
+    }
+}
+
+@keyframes wave-pulse {
+    from { transform: scaleY(0.55); }
+    to { transform: scaleY(1); }
+}
+
+@keyframes grid-rush {
+    to {
+        background-position: 0 60px;
+    }
+}
+
 .app-container {
+    position: relative;
+    z-index: 1;
     width: 100%;
-    max-width: 600px;
-    padding: 2rem;
+    max-width: 760px;
+    padding: 1.5rem 2rem;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.25rem;
+    gap: 0.5rem;
 }
 
 main {
@@ -46,35 +169,7 @@ main {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.5rem;
-}
-
-header {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-    gap: 0;
-}
-
-h1 {
-    font-weight: 700;
-    font-size: 3rem;
-    letter-spacing: -0.025em;
-    text-align: center;
-    margin: 0;
-    line-height: 1.2;
-}
-
-#motivational-quote {
-    color: #4ade80;
-    font-size: 0.85rem;
-    font-style: italic;
-    margin: 0.25rem 1rem 0;
-    text-align: center;
-    line-height: 1.4;
-    max-width: 500px;
+    gap: 0.6rem;
 }
 
 .icon-button {
@@ -83,8 +178,8 @@ h1 {
     color: inherit;
     cursor: pointer;
     padding: 0.5rem;
-    border-radius: 50%;
-    transition: background-color 0.2s;
+    border-radius: 2px;
+    transition: background-color 0.2s, color 0.2s;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -96,25 +191,42 @@ h1 {
 }
 
 .icon-button:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: var(--tint);
+    color: var(--primary-color);
 }
 
 /* Timer Display with Ring */
 .timer-display-container {
+    --ring-size: min(680px, 88vw, max(300px, 100vh - 270px));
     position: relative;
-    width: min(500px, 80vw);
-    height: min(500px, 80vw);
+    width: var(--ring-size);
+    height: var(--ring-size);
+    container-type: inline-size;
     display: flex;
     justify-content: center;
     align-items: center;
     margin: 0 auto;
 }
 
+/* soft glow pooled inside the ring */
+.timer-display-container::before {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    inset: 5.5%;
+    background:
+        radial-gradient(circle, color-mix(in srgb, var(--primary-color) 12%, transparent), transparent 70%),
+        color-mix(in srgb, var(--bg-color) 82%, transparent);
+    pointer-events: none;
+}
+
 .progress-ring {
+    position: relative;
     width: 100%;
     height: 100%;
     transform: rotate(-90deg);
     pointer-events: none;
+    overflow: visible;
 }
 
 .progress-ring__circle-bg {
@@ -127,8 +239,99 @@ h1 {
     /* 2 * PI * 230 */
     stroke-dashoffset: 0;
     transition: stroke-dashoffset 0.1s linear;
-    stroke-linecap: round;
-    filter: drop-shadow(0 0 6px var(--primary-color));
+    stroke-linecap: butt;
+    filter: drop-shadow(0 0 4px var(--primary-color)) drop-shadow(0 0 14px var(--primary-color));
+}
+
+/* HUD: tick marks outside the ring and a slow counter-rotating dial inside it */
+.ring-hud__ticks {
+    stroke: var(--primary-color);
+    stroke-width: 6;
+    opacity: 0.55;
+}
+
+.ring-hud__inner {
+    stroke: var(--accent-color);
+    stroke-width: 1.5;
+    opacity: 0.8;
+    transform-origin: 250px 250px;
+    animation: beam-orbit 40s linear infinite reverse;
+    filter: drop-shadow(0 0 3px var(--accent-color));
+}
+
+/* Cyberpunk beam: a neon green pulse circling the ring, with a tail that fades out behind it */
+.ring-beam {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: beam-orbit 3s linear infinite, beam-flicker 1.7s steps(1, end) infinite;
+    filter: drop-shadow(0 0 4px var(--neon-green)) drop-shadow(0 0 12px var(--neon-green));
+}
+
+/* the tail: a sweep that goes from nothing to full brightness at the head (top of the box) */
+.ring-beam::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg,
+            transparent 0deg,
+            transparent 200deg,
+            color-mix(in srgb, var(--neon-green) 12%, transparent) 250deg,
+            color-mix(in srgb, var(--neon-green) 40%, transparent) 305deg,
+            var(--neon-green) 350deg,
+            #eaffe0 360deg);
+    /* keep only the band that sits on the ring stroke (radius 224-236 of 250) */
+    -webkit-mask: radial-gradient(closest-side, transparent 89.3%, #000 89.8%, #000 94.2%, transparent 94.7%);
+    mask: radial-gradient(closest-side, transparent 89.3%, #000 89.8%, #000 94.2%, transparent 94.7%);
+}
+
+/* the head: a bright rounded tip leading the tail */
+.ring-beam::after {
+    content: '';
+    position: absolute;
+    top: 2.4%;
+    left: 50%;
+    width: 3.2%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: #f4fff0;
+    transform: translateX(-50%);
+    box-shadow: 0 0 10px 2px var(--neon-green);
+}
+
+/* the beam speeds up while the timer runs and turns red when time is up */
+body[data-timer-state="running"] .ring-beam {
+    animation-duration: 1.6s, 1.7s;
+}
+
+body[data-timer-state="paused"] .ring-beam {
+    animation-play-state: paused, running;
+}
+
+body[data-timer-state="complete"] .ring-beam {
+    --neon-green: var(--danger-color);
+    animation-duration: 0.8s, 0.6s;
+}
+
+@keyframes beam-orbit {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes beam-flicker {
+    0% { opacity: 1; }
+    8% { opacity: 0.25; }
+    11% { opacity: 1; }
+    42% { opacity: 1; }
+    45% { opacity: 0.4; }
+    47% { opacity: 1; }
+    49% { opacity: 0.15; }
+    53% { opacity: 1; }
+    80% { opacity: 0.6; }
+    84% { opacity: 1; }
 }
 
 .timer-display {
@@ -138,18 +341,64 @@ h1 {
 
 .time-text {
     font-family: var(--font-mono);
-    font-size: 6rem;
-    font-weight: 700;
+    font-size: var(--time-size, 18.4cqw);
+    font-weight: var(--time-weight, 400);
     line-height: 1;
-    letter-spacing: -0.05em;
-    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    letter-spacing: var(--time-track, 0);
+    color: #ffffff;
+    text-shadow:
+        0 0 6px var(--primary-color),
+        0 0 22px var(--primary-color),
+        0 0 46px color-mix(in srgb, var(--primary-color) 55%, transparent);
+    animation: digit-glitch 6s steps(1, end) infinite;
+}
+
+/* Digit glitch: a brief red/cyan colour split and sideways jump every few seconds */
+@keyframes digit-glitch {
+    0%, 100% {
+        transform: none;
+        text-shadow:
+            0 0 6px var(--primary-color),
+            0 0 22px var(--primary-color),
+            0 0 46px color-mix(in srgb, var(--primary-color) 55%, transparent);
+    }
+
+    91% {
+        transform: translateX(-3px) skewX(-6deg);
+        text-shadow: -4px 0 var(--accent-color), 4px 0 var(--primary-color), 0 0 22px var(--primary-color);
+    }
+
+    93% {
+        transform: translateX(3px) skewX(5deg);
+        text-shadow: 4px 0 var(--accent-color), -4px 0 var(--primary-color), 0 0 22px var(--primary-color);
+    }
+
+    95% {
+        transform: translateX(-1px);
+        text-shadow: -2px 0 var(--accent-color), 2px 0 var(--primary-color), 0 0 22px var(--primary-color);
+    }
+
+    97% {
+        transform: none;
+        text-shadow:
+            0 0 6px var(--primary-color),
+            0 0 22px var(--primary-color),
+            0 0 46px color-mix(in srgb, var(--primary-color) 55%, transparent);
+    }
+}
+
+body[data-timer-state="complete"] .time-text {
+    --primary-color: var(--danger-color);
+    animation-duration: 1.2s;
 }
 
 .break-label {
     margin-top: 0.75rem;
-    font-size: 1.75rem;
+    font-family: var(--font-display);
+    font-size: clamp(0.9rem, 4.5cqw, 2.2rem);
     font-weight: 700;
-    color: #fbbf24;
+    color: var(--neon-yellow);
+    text-shadow: 0 0 8px color-mix(in srgb, var(--neon-yellow) 70%, transparent);
     text-transform: uppercase;
     letter-spacing: 0.1em;
     animation: flash 1s infinite;
@@ -157,21 +406,26 @@ h1 {
 
 .break-label {
     padding: 0.1rem 0.6rem;
-    border-radius: 0.5rem;
+    border-radius: 2px;
     border: 1px dashed transparent;
     outline: none;
     cursor: text;
+    width: fit-content;
     max-width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    /* letter-spacing adds a trailing gap after the last letter; balance it on the left */
+    padding-left: calc(0.6rem + 0.1em);
     white-space: nowrap;
     overflow: hidden;
 }
 
 .break-label:hover {
-    border-color: rgba(251, 191, 36, 0.5);
+    border-color: color-mix(in srgb, var(--neon-yellow) 50%, transparent);
 }
 
 .break-label:focus {
-    border-color: #fbbf24;
+    border-color: var(--neon-yellow);
     animation: none;
 }
 
@@ -181,16 +435,28 @@ h1 {
 
 .status-text {
     margin-top: 0.5rem;
-    font-size: 1rem;
-    color: #94a3b8;
+    font-family: var(--font-mono);
+    font-size: clamp(0.8rem, 3.2cqw, 1.4rem);
+    color: var(--muted);
     text-transform: uppercase;
     letter-spacing: 0.1em;
     transition: all 0.3s ease;
 }
 
+.status-text::before {
+    content: '[ ';
+    opacity: 0.6;
+}
+
+.status-text::after {
+    content: ' ]';
+    opacity: 0.6;
+}
+
 .status-text.complete {
-    font-size: 1.5rem;
+    font-size: clamp(1.1rem, 4.8cqw, 2.1rem);
     font-weight: 700;
+    text-shadow: 0 0 12px var(--danger-color);
     animation: flash 0.5s infinite;
 }
 
@@ -206,6 +472,33 @@ h1 {
     }
 }
 
+/* Angular "cut corner" buttons: the element paints the edge, ::before paints the fill */
+.preset-btn,
+.control-btn {
+    --edge: var(--line);
+    --fill: var(--secondary-color);
+    position: relative;
+    isolation: isolate;
+    background: var(--edge);
+    border: none;
+    border-radius: 0;
+    font-family: var(--font-main);
+    text-transform: var(--ui-case, uppercase);
+    letter-spacing: var(--ui-track, 0.08em);
+    clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+}
+
+.preset-btn::before,
+.control-btn::before {
+    content: '';
+    position: absolute;
+    inset: 1px;
+    background: var(--fill);
+    clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+    z-index: -1;
+    transition: background 0.2s;
+}
+
 /* Inputs */
 .input-section {
     width: 100%;
@@ -214,7 +507,7 @@ h1 {
 }
 
 .preset-btn.custom-time-btn {
-    border-color: #334155;
+    --edge: color-mix(in srgb, var(--accent-color) 70%, transparent);
 }
 
 .time-inputs {
@@ -222,9 +515,10 @@ h1 {
     align-items: center;
     gap: 0.5rem;
     background: var(--secondary-color);
-    padding: 1rem;
-    border-radius: 1rem;
-    box-shadow: var(--shadow-soft);
+    border: 1px solid var(--line);
+    padding: 0.75rem 1.25rem;
+    border-radius: 2px;
+    box-shadow: 0 0 18px var(--tint), inset 0 0 18px var(--tint);
 }
 
 .input-group {
@@ -244,8 +538,13 @@ h1 {
     outline: none;
 }
 
+.input-group input::placeholder {
+    color: color-mix(in srgb, var(--muted) 60%, transparent);
+}
+
 .input-group input:focus {
     color: var(--primary-color);
+    text-shadow: 0 0 8px var(--primary-color);
 }
 
 /* Remove arrows from number input */
@@ -257,15 +556,17 @@ h1 {
 }
 
 .input-group label {
+    font-family: var(--font-mono);
     font-size: 0.75rem;
-    color: #94a3b8;
+    color: var(--muted);
     margin-top: 0.25rem;
+    letter-spacing: 0.1em;
 }
 
 .separator {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #64748b;
+    color: var(--primary-color);
     margin-bottom: 1.25rem;
     /* align correctly with nums */
 }
@@ -288,27 +589,28 @@ h1 {
 }
 
 .preset-btn {
-    background: var(--secondary-color);
-    border: 1px solid transparent;
+    --cut: 8px;
     color: var(--text-color);
-    padding: 0.7rem 1rem;
+    padding: 0.6rem 0.9rem;
     white-space: nowrap;
     flex-shrink: 0;
-    border-radius: 9999px;
     cursor: pointer;
-    font-weight: 500;
-    transition: all 0.2s;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: color 0.2s, transform 0.2s;
 }
 
 .preset-btn:hover {
-    background: #334155;
+    --edge: var(--primary-color);
+    color: var(--primary-color);
     transform: translateY(-1px);
 }
 
 .preset-btn.active {
-    background: var(--primary-color);
-    color: white;
-    box-shadow: var(--shadow-glow);
+    --edge: var(--primary-color);
+    --fill: var(--primary-color);
+    color: var(--on-primary);
+    font-weight: 700;
 }
 
 /* Controls */
@@ -318,63 +620,63 @@ h1 {
     gap: 1rem;
     margin-top: 0.5rem;
     width: 100%;
+    filter: drop-shadow(0 0 10px color-mix(in srgb, var(--primary-color) 30%, transparent));
 }
 
 .control-btn {
-    padding: 0.75rem 2rem;
-    border-radius: 0.75rem;
-    font-weight: 600;
-    font-size: 1.125rem;
+    padding: 0.7rem 2rem;
+    font-weight: 700;
+    font-size: 1.2rem;
     cursor: pointer;
-    border: none;
-    transition: all 0.2s;
+    transition: color 0.2s, transform 0.2s;
     min-width: 100px;
 }
 
 .control-btn:disabled {
-    opacity: 0.5;
+    opacity: 0.4;
     cursor: not-allowed;
     transform: none;
 }
 
 .control-btn.primary {
-    background: var(--primary-color);
-    color: white;
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    --edge: var(--primary-color);
+    --fill: var(--primary-color);
+    color: var(--on-primary);
 }
 
 .control-btn.primary:hover:not(:disabled) {
-    background: #2563eb;
+    --edge: #ffffff;
+    --fill: color-mix(in srgb, var(--primary-color) 70%, #ffffff);
     transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
 }
 
 .control-btn.secondary {
-    background: var(--secondary-color);
-    color: var(--text-color);
+    --edge: color-mix(in srgb, var(--primary-color) 60%, transparent);
+    color: var(--primary-color);
 }
 
 .control-btn.secondary:hover:not(:disabled) {
-    background: #334155;
+    --edge: var(--primary-color);
+    --fill: color-mix(in srgb, var(--primary-color) 18%, var(--secondary-color));
 }
 
 .control-btn.destr {
-    background: transparent;
-    color: #94a3b8;
-    border: 1px solid #334155;
+    --edge: color-mix(in srgb, var(--muted) 60%, transparent);
+    --fill: var(--bg-color);
+    color: var(--muted);
 }
 
 .control-btn.destr:hover:not(:disabled) {
+    --edge: var(--danger-color);
+    --fill: color-mix(in srgb, var(--danger-color) 16%, var(--bg-color));
     color: var(--danger-color);
-    border-color: var(--danger-color);
-    background: rgba(239, 68, 68, 0.1);
 }
 
 .control-btn.settings-control {
-    background: transparent;
-    color: #94a3b8;
-    border: 1px solid #334155;
-    padding: 0.75rem;
+    --edge: color-mix(in srgb, var(--muted) 60%, transparent);
+    --fill: var(--bg-color);
+    color: var(--muted);
+    padding: 0.7rem;
     min-width: 0;
     display: inline-flex;
     align-items: center;
@@ -382,19 +684,20 @@ h1 {
 }
 
 .control-btn.settings-control:hover {
-    color: var(--text-color);
-    border-color: var(--primary-color);
-    background: rgba(59, 130, 246, 0.1);
+    --edge: var(--primary-color);
+    --fill: color-mix(in srgb, var(--primary-color) 14%, var(--bg-color));
+    color: var(--primary-color);
 }
 
 .control-btn.stop {
-    background: var(--danger-color);
+    --edge: var(--danger-color);
+    --fill: var(--danger-color);
     color: white;
     animation: pulse 1s infinite;
 }
 
 .control-btn.stop:hover {
-    background: #dc2626;
+    --fill: color-mix(in srgb, var(--danger-color) 80%, #000000);
 }
 
 .hidden {
@@ -419,10 +722,17 @@ h1 {
     align-items: center;
     justify-content: center;
     gap: 1rem;
-    background: rgba(30, 41, 59, 0.5);
+    background: color-mix(in srgb, var(--secondary-color) 70%, transparent);
+    border: 1px solid var(--line-soft);
+    border-left: 3px solid var(--primary-color);
     padding: 0.5rem 1rem;
-    border-radius: 2rem;
+    border-radius: 2px;
     margin-top: 0.5rem;
+}
+
+/* keep the mute button inside the bar, beside the slider */
+.sound-controls .icon-button {
+    position: static;
 }
 
 #time-slider {
@@ -430,37 +740,51 @@ h1 {
     appearance: none;
     width: min(260px, 60vw);
     height: 6px;
-    border-radius: 3px;
-    background: linear-gradient(to right, var(--danger-color, #ef4444) var(--fill, 0%), #475569 var(--fill, 0%));
+    border-radius: 0;
+    background: linear-gradient(to right, var(--danger-color, #ff003c) var(--fill, 0%), color-mix(in srgb, var(--muted) 40%, transparent) var(--fill, 0%));
     outline: none;
 }
 
 #time-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    appearance: none;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
+    width: 10px;
+    height: 18px;
+    border-radius: 0;
     background: var(--text-color);
+    box-shadow: 0 0 8px var(--primary-color);
     cursor: pointer;
 }
 
 #time-slider::-moz-range-thumb {
-    width: 12px;
-    height: 12px;
+    width: 10px;
+    height: 18px;
     border: none;
-    border-radius: 50%;
+    border-radius: 0;
     background: var(--text-color);
+    box-shadow: 0 0 8px var(--primary-color);
     cursor: pointer;
 }
 
 footer {
     margin-top: auto;
-    font-size: 0.875rem;
-    color: #64748b;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.04em;
+    color: #cbd5e1;
     text-align: center;
     width: 100%;
+}
+
+footer a {
+    color: var(--primary-color);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+footer a:hover {
+    color: var(--accent-color);
+    text-shadow: 0 0 8px var(--accent-color);
 }
 
 /* Mobile Responsive */
@@ -470,24 +794,8 @@ footer {
         gap: 1rem;
     }
 
-    h1 {
-        font-size: 1.75rem;
-    }
-
     .timer-display-container {
         margin: 0.5rem auto;
-    }
-
-    .time-text {
-        font-size: clamp(2rem, 12vw, 4rem);
-    }
-
-    .status-text {
-        font-size: 0.875rem;
-    }
-
-    .break-label {
-        font-size: 1.1rem;
     }
 
     .time-inputs {
@@ -534,16 +842,12 @@ footer {
     }
 
     footer {
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         text-align: center;
     }
 }
 
 @media (max-width: 380px) {
-    .time-text {
-        font-size: 1.75rem;
-    }
-
     .control-btn {
         padding: 0.5rem 1rem;
         min-width: 80px;
@@ -559,7 +863,7 @@ footer {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(2, 3, 10, 0.8);
     backdrop-filter: blur(4px);
     z-index: 1000;
     justify-content: center;
@@ -573,30 +877,40 @@ footer {
 
 .modal-content {
     background: var(--secondary-color);
-    border-radius: 1rem;
+    border: 1px solid var(--primary-color);
+    border-radius: 2px;
     width: 100%;
     max-width: 400px;
     max-height: 90vh;
     overflow-y: auto;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 30px color-mix(in srgb, var(--primary-color) 35%, transparent), 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 }
 
 .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: relative;
     padding: 1rem 1.5rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid var(--line);
 }
 
 .modal-header h2 {
-    font-size: 1.25rem;
-    font-weight: 600;
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: var(--ui-track, 0.1em);
+    text-transform: var(--ui-case, uppercase);
+    color: var(--primary-color);
+}
+
+.modal-header .icon-button {
+    right: 1rem;
 }
 
 .settings-section {
     padding: 1.5rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid var(--line-soft);
 }
 
 .settings-section:last-child {
@@ -604,12 +918,18 @@ footer {
 }
 
 .settings-section h3 {
+    font-family: var(--font-mono);
     font-size: 0.875rem;
-    font-weight: 500;
-    color: #94a3b8;
+    font-weight: 400;
+    color: var(--accent-color);
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.1em;
     margin-bottom: 1rem;
+}
+
+.settings-section h3::before {
+    content: '// ';
+    opacity: 0.7;
 }
 
 /* Sound Options */
@@ -622,39 +942,51 @@ footer {
 
 .sound-option {
     background: var(--bg-color);
-    border: 2px solid transparent;
+    border: 1px solid var(--line-soft);
     color: var(--text-color);
     padding: 0.625rem 0.5rem;
-    border-radius: 0.5rem;
+    border-radius: 2px;
     cursor: pointer;
-    font-weight: 500;
-    font-size: 0.875rem;
+    font-family: var(--font-main);
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-transform: var(--ui-case, uppercase);
+    letter-spacing: var(--ui-track, 0.06em);
     transition: all 0.2s;
 }
 
 .sound-option:hover {
-    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--line);
+    background: var(--tint);
 }
 
 .sound-option.active {
     border-color: var(--primary-color);
-    background: rgba(59, 130, 246, 0.1);
+    color: var(--primary-color);
+    background: var(--tint);
+    box-shadow: 0 0 10px color-mix(in srgb, var(--primary-color) 35%, transparent);
 }
 
 .preview-btn {
     width: 100%;
     background: var(--bg-color);
-    border: 1px solid #475569;
+    border: 1px solid var(--line);
     color: var(--text-color);
     padding: 0.625rem 1rem;
-    border-radius: 0.5rem;
+    border-radius: 2px;
     cursor: pointer;
-    font-weight: 500;
+    font-family: var(--font-main);
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-transform: var(--ui-case, uppercase);
+    letter-spacing: var(--ui-track, 0.06em);
     transition: all 0.2s;
 }
 
 .preview-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    background: var(--tint);
 }
 
 /* Custom Audio Upload */
@@ -665,7 +997,8 @@ footer {
     margin-bottom: 1rem;
     padding: 0.75rem;
     background: var(--bg-color);
-    border-radius: 0.5rem;
+    border: 1px solid var(--line-soft);
+    border-radius: 2px;
 }
 
 .custom-upload-section.hidden {
@@ -675,23 +1008,27 @@ footer {
 .upload-btn {
     background: var(--primary-color);
     border: none;
-    color: white;
+    color: var(--on-primary);
     padding: 0.5rem 1rem;
-    border-radius: 0.375rem;
+    border-radius: 2px;
     cursor: pointer;
-    font-weight: 500;
-    font-size: 0.875rem;
+    font-family: var(--font-main);
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-transform: var(--ui-case, uppercase);
+    letter-spacing: var(--ui-track, 0.06em);
     transition: all 0.2s;
     white-space: nowrap;
 }
 
 .upload-btn:hover {
-    background: #2563eb;
+    background: color-mix(in srgb, var(--primary-color) 70%, #ffffff);
 }
 
 .custom-audio-name {
-    font-size: 0.875rem;
-    color: #94a3b8;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--muted);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -711,21 +1048,22 @@ footer {
     align-items: center;
     gap: 0.5rem;
     background: transparent;
-    border: 2px solid transparent;
+    border: 1px solid transparent;
     color: var(--text-color);
-    padding: 0.75rem;
-    border-radius: 0.75rem;
+    padding: 0.75rem 0.25rem;
+    border-radius: 2px;
     cursor: pointer;
+    font-family: var(--font-main);
     transition: all 0.2s;
 }
 
 .theme-option:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--tint);
 }
 
 .theme-option.active {
     border-color: var(--primary-color);
-    background: rgba(59, 130, 246, 0.1);
+    background: var(--tint);
 }
 
 .theme-preview {
@@ -734,58 +1072,540 @@ footer {
     border-radius: 50%;
     background: var(--preview-bg);
     border: 3px solid var(--preview-accent);
-    box-shadow: 0 0 0 2px var(--preview-bg), inset 0 0 8px var(--preview-accent);
+    box-shadow: 0 0 0 2px var(--preview-bg), 0 0 10px var(--preview-accent), inset 0 0 8px var(--preview-accent);
 }
 
 .theme-option span:last-child {
-    font-size: 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: var(--ui-case, uppercase);
+    letter-spacing: var(--ui-track, 0.06em);
+}
+
+/* ==========================================================================
+   Themes. Cyberpunk is the base stylesheet above; each block below is a
+   different look, not just a recolour.
+   ========================================================================== */
+
+/* ---- Shared by the four "soft" themes: no glitch, no scanlines, rounded shapes ---- */
+body:is([data-theme="standard"], [data-theme="space"], [data-theme="forest"], [data-theme="ocean"])::after,
+body:is([data-theme="standard"], [data-theme="space"], [data-theme="forest"], [data-theme="ocean"]) .status-text::before,
+body:is([data-theme="standard"], [data-theme="space"], [data-theme="forest"], [data-theme="ocean"]) .status-text::after,
+body:is([data-theme="standard"], [data-theme="space"], [data-theme="forest"], [data-theme="ocean"]) .settings-section h3::before,
+body:is([data-theme="standard"], [data-theme="space"], [data-theme="forest"], [data-theme="ocean"]) .ring-hud__ticks {
+    display: none;
+}
+
+body:is([data-theme="standard"], [data-theme="space"], [data-theme="forest"], [data-theme="ocean"]) {
+    --btn-radius: 9999px;
+    --panel-radius: 0.75rem;
+}
+
+body:is([data-theme="standard"], [data-theme="space"], [data-theme="forest"], [data-theme="ocean"]) .time-text {
+    animation: none;
+}
+
+body:is([data-theme="standard"], [data-theme="space"], [data-theme="forest"], [data-theme="ocean"]) :is(.preset-btn, .control-btn),
+body:is([data-theme="standard"], [data-theme="space"], [data-theme="forest"], [data-theme="ocean"]) :is(.preset-btn, .control-btn)::before {
+    clip-path: none;
+    border-radius: var(--btn-radius);
+}
+
+body:is([data-theme="standard"], [data-theme="space"], [data-theme="forest"], [data-theme="ocean"]) :is(.time-inputs, .modal-content, .sound-option, .preview-btn, .upload-btn, .custom-upload-section, .theme-option, .break-label) {
+    border-radius: var(--panel-radius);
+}
+
+body:is([data-theme="standard"], [data-theme="space"], [data-theme="forest"], [data-theme="ocean"]) .sound-controls {
+    border-radius: 2rem;
+    border-left-width: 1px;
+    border-left-color: var(--line-soft);
+}
+
+body:is([data-theme="standard"], [data-theme="space"], [data-theme="forest"], [data-theme="ocean"]) .progress-ring__circle {
+    stroke-linecap: round;
+}
+
+body:is([data-theme="standard"], [data-theme="space"], [data-theme="forest"], [data-theme="ocean"]) #time-slider {
+    border-radius: 3px;
+}
+
+body:is([data-theme="standard"], [data-theme="space"], [data-theme="forest"], [data-theme="ocean"]) #time-slider::-webkit-slider-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+}
+
+body:is([data-theme="standard"], [data-theme="space"], [data-theme="forest"], [data-theme="ocean"]) #time-slider::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+}
+
+body:is([data-theme="space"], [data-theme="forest"], [data-theme="ocean"], [data-theme="sunset"]) .sound-wave {
+    display: none;
+}
+
+/* ---- Standard: the clean original look, no effects ---- */
+[data-theme="standard"] {
+    --bg-color: #0f172a;
+    --text-color: #f8fafc;
+    --primary-color: #3b82f6;
+    --secondary-color: #1e293b;
+    --accent-color: #60a5fa;
+    --danger-color: #ef4444;
+    --ring-bg: #1e293b;
+    --ring-active: #3b82f6;
+    --neon-yellow: #fbbf24;
+    --muted: #94a3b8;
+    --on-primary: #ffffff;
+    --font-main: 'Inter', sans-serif;
+    --font-display: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --ui-case: none;
+    --ui-track: normal;
+    --time-size: 19.2cqw;
+    --time-weight: 700;
+    --time-track: -0.05em;
+    --panel-radius: 0.75rem;
+    background-image: none;
+    font-size: 1rem;
+}
+
+[data-theme="standard"] :is(.cyber-bg, .ring-hud, .ring-beam),
+[data-theme="standard"] .timer-display-container::before {
+    display: none;
+}
+
+[data-theme="standard"] .time-text {
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="standard"] .progress-ring__circle {
+    filter: drop-shadow(0 0 6px var(--primary-color));
+}
+
+[data-theme="standard"] .break-label {
+    font-size: clamp(1rem, 5.6cqw, 2.6rem);
+    text-shadow: none;
+}
+
+[data-theme="standard"] .preset-btn {
+    --edge: transparent;
     font-weight: 500;
 }
 
-/* Color Themes */
-[data-theme="ocean"] {
-    --bg-color: #0c4a6e;
-    --secondary-color: #164e63;
-    --primary-color: #06b6d4;
-    --accent-color: #22d3ee;
-    --ring-bg: #155e75;
-    --ring-active: #06b6d4;
+[data-theme="standard"] .preset-btn.active {
+    color: #ffffff;
 }
 
+[data-theme="standard"] .control-btn {
+    --btn-radius: 0.75rem;
+    font-weight: 600;
+    font-size: 1.125rem;
+}
+
+[data-theme="standard"] .controls {
+    filter: none;
+}
+
+[data-theme="standard"] .modal-content {
+    border-color: transparent;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="standard"] .modal-header h2 {
+    color: var(--text-color);
+    font-weight: 600;
+    font-size: 1.25rem;
+}
+
+[data-theme="standard"] .settings-section h3 {
+    color: var(--muted);
+    font-family: var(--font-main);
+    letter-spacing: 0.05em;
+}
+
+[data-theme="standard"] footer {
+    font-family: var(--font-main);
+    font-size: 0.875rem;
+    letter-spacing: normal;
+}
+
+[data-theme="standard"] footer a {
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+/* ---- Space: drifting starfield, nebula glow, shooting star, comet beam ---- */
+[data-theme="space"] {
+    --bg-color: #05041a;
+    --text-color: #eef0ff;
+    --primary-color: #a78bfa;
+    --secondary-color: #110d33;
+    --accent-color: #38bdf8;
+    --danger-color: #fb7185;
+    --ring-bg: #1b1548;
+    --ring-active: #a78bfa;
+    --neon-yellow: #fde68a;
+    --neon-green: #e0f2fe;
+    --muted: #9aa0c8;
+    --on-primary: #0b0726;
+    --font-main: 'Exo 2', sans-serif;
+    --font-display: 'Exo 2', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --ui-track: 0.12em;
+    --time-size: 16.8cqw;
+    --time-weight: 400;
+    --time-track: -0.04em;
+    background-image:
+        radial-gradient(ellipse at 18% 12%, rgba(124, 58, 237, 0.38), transparent 52%),
+        radial-gradient(ellipse at 85% 78%, rgba(14, 116, 190, 0.34), transparent 55%),
+        radial-gradient(ellipse at 70% 15%, rgba(219, 39, 119, 0.16), transparent 45%);
+    background-size: auto;
+}
+
+/* far stars drift slowly; near stars twinkle; a shooting star crosses now and then */
+[data-theme="space"] .cyber-bg {
+    background-image:
+        radial-gradient(circle, #ffffff 0 0.8px, transparent 1.3px),
+        radial-gradient(circle, #dbeafe 0 1px, transparent 1.6px),
+        radial-gradient(circle, #ffffff 0 0.7px, transparent 1.2px);
+    background-size: 130px 150px, 230px 190px, 90px 110px;
+    background-position: 10px 20px, 90px 130px, 50px 70px;
+    opacity: 0.9;
+    animation: stars-drift 160s linear infinite;
+}
+
+[data-theme="space"] .cyber-bg::before {
+    inset: 0;
+    height: auto;
+    background-image:
+        radial-gradient(circle, #ffffff 0 1.6px, rgba(196, 181, 253, 0.5) 2.4px, transparent 4px),
+        radial-gradient(circle, #bae6fd 0 1.3px, rgba(125, 211, 252, 0.4) 2.2px, transparent 3.6px);
+    background-size: 370px 310px, 290px 430px;
+    background-position: 60px 40px, 200px 250px;
+    transform: none;
+    -webkit-mask: none;
+    mask: none;
+    opacity: 1;
+    animation: twinkle 3.2s ease-in-out infinite alternate;
+}
+
+[data-theme="space"] .cyber-bg::after {
+    top: 12vh;
+    left: auto;
+    right: -20vw;
+    width: 180px;
+    height: 2px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, #ffffff, rgba(196, 181, 253, 0.6) 30%, transparent);
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
+    transform: rotate(-24deg);
+    opacity: 0;
+    animation: shooting-star 9s ease-in infinite;
+}
+
+[data-theme="space"] .ring-hud__inner {
+    stroke: var(--accent-color);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-dasharray: 0.5 9.5;
+    opacity: 0.9;
+    animation-duration: 60s;
+}
+
+[data-theme="space"] .time-text {
+    text-shadow: 0 0 10px var(--primary-color), 0 0 34px color-mix(in srgb, var(--primary-color) 60%, transparent);
+}
+
+[data-theme="space"] .break-label {
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    padding-left: calc(0.6rem + 0.25em);
+}
+
+@keyframes stars-drift {
+    to {
+        background-position: -1290px 320px, -1290px 510px, -1300px 290px;
+    }
+}
+
+@keyframes twinkle {
+    from { opacity: 0.25; }
+    to { opacity: 1; }
+}
+
+@keyframes shooting-star {
+    0%, 78% { opacity: 0; translate: 0 0; }
+    80% { opacity: 1; translate: 0 0; }
+    92% { opacity: 1; translate: -90vw 40vh; }
+    94%, 100% { opacity: 0; translate: -100vw 44vh; }
+}
+
+/* ---- Forest: fireflies, swaying light rays, leaf-shaped buttons ---- */
 [data-theme="forest"] {
-    --bg-color: #14532d;
-    --secondary-color: #166534;
-    --primary-color: #22c55e;
-    --accent-color: #4ade80;
-    --ring-bg: #15803d;
-    --ring-active: #22c55e;
+    --bg-color: #05160c;
+    --text-color: #f0fdf4;
+    --primary-color: #4ade80;
+    --secondary-color: #0d2a18;
+    --accent-color: #facc15;
+    --danger-color: #f87171;
+    --ring-bg: #123a22;
+    --ring-active: #4ade80;
+    --neon-yellow: #fde047;
+    --neon-green: #fde047;
+    --muted: #9dbfa8;
+    --on-primary: #052e16;
+    --font-main: 'Quicksand', sans-serif;
+    --font-display: 'Quicksand', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --ui-case: none;
+    --ui-track: 0.02em;
+    --time-size: 17.6cqw;
+    --time-weight: 700;
+    --time-track: -0.05em;
+    --btn-radius: 1.1rem 0.3rem 1.1rem 0.3rem;
+    --panel-radius: 1rem 0.3rem 1rem 0.3rem;
+    background-image:
+        radial-gradient(ellipse at 50% -10%, rgba(134, 239, 172, 0.26), transparent 60%),
+        radial-gradient(ellipse at 0% 100%, rgba(6, 78, 59, 0.7), transparent 55%),
+        radial-gradient(ellipse at 100% 100%, rgba(20, 83, 45, 0.7), transparent 55%);
+    background-size: auto;
 }
 
+/* fireflies float upward; a second swarm blinks; soft light rays sway from the canopy */
+[data-theme="forest"] .cyber-bg {
+    background-image:
+        radial-gradient(circle, #fef9c3 0 1.5px, rgba(253, 224, 71, 0.45) 3.5px, transparent 8px),
+        radial-gradient(circle, #ecfccb 0 1.2px, rgba(190, 242, 100, 0.4) 3px, transparent 7px);
+    background-size: 310px 270px, 230px 390px;
+    background-position: 40px 30px, 150px 200px;
+    opacity: 0.9;
+    animation: fireflies-float 38s linear infinite;
+}
+
+[data-theme="forest"] .cyber-bg::before {
+    inset: 0;
+    height: auto;
+    background-image:
+        radial-gradient(circle, #fef9c3 0 2px, rgba(253, 224, 71, 0.5) 4.5px, transparent 10px),
+        radial-gradient(circle, #fef08a 0 1.5px, rgba(250, 204, 21, 0.45) 4px, transparent 9px);
+    background-size: 450px 370px, 350px 510px;
+    background-position: 220px 120px, 80px 330px;
+    transform: none;
+    -webkit-mask: none;
+    mask: none;
+    opacity: 1;
+    animation: twinkle 2.4s ease-in-out infinite alternate;
+}
+
+[data-theme="forest"] .cyber-bg::after {
+    top: -10vh;
+    left: -20vw;
+    right: -20vw;
+    height: 120vh;
+    background: repeating-linear-gradient(100deg, transparent 0 9vw, rgba(187, 247, 208, 0.07) 11vw 14vw, transparent 16vw 23vw);
+    -webkit-mask: linear-gradient(to bottom, #000, transparent 80%);
+    mask: linear-gradient(to bottom, #000, transparent 80%);
+    transform: none;
+    animation: rays-sway 11s ease-in-out infinite alternate;
+}
+
+[data-theme="forest"] .ring-hud__inner {
+    stroke: var(--primary-color);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-dasharray: 14 6 2 6;
+    opacity: 0.55;
+    filter: none;
+    animation-duration: 90s;
+}
+
+[data-theme="forest"] .time-text {
+    text-shadow: 0 0 14px rgba(74, 222, 128, 0.55), 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="forest"] .break-label {
+    font-weight: 700;
+}
+
+@keyframes fireflies-float {
+    to {
+        background-position: 350px -1050px, -80px -1360px;
+    }
+}
+
+@keyframes rays-sway {
+    from { transform: translateX(-4vw) skewX(-4deg); opacity: 0.6; }
+    to { transform: translateX(4vw) skewX(4deg); opacity: 1; }
+}
+
+/* ---- Ocean: rising bubbles, swaying light from the surface, pill buttons ---- */
+[data-theme="ocean"] {
+    --bg-color: #021a2b;
+    --text-color: #ecfeff;
+    --primary-color: #22d3ee;
+    --secondary-color: #06334d;
+    --accent-color: #5eead4;
+    --danger-color: #fb7185;
+    --ring-bg: #0a4161;
+    --ring-active: #22d3ee;
+    --neon-yellow: #fde68a;
+    --neon-green: #a5f3fc;
+    --muted: #93c5d6;
+    --on-primary: #032434;
+    --font-main: 'Quicksand', sans-serif;
+    --font-display: 'Quicksand', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --ui-case: none;
+    --ui-track: 0.03em;
+    --time-size: 17.6cqw;
+    --time-weight: 400;
+    --time-track: -0.05em;
+    --panel-radius: 1.25rem;
+    background-image: linear-gradient(to bottom, #0b5a82 0%, #05395a 35%, #021a2b 75%, #010d17 100%);
+    background-size: auto;
+}
+
+/* small and large bubbles rise at different speeds; light shafts sway from above */
+[data-theme="ocean"] .cyber-bg {
+    background-image:
+        radial-gradient(circle, transparent 0 2.5px, rgba(207, 250, 254, 0.6) 3px 3.8px, transparent 4.4px),
+        radial-gradient(circle, transparent 0 5px, rgba(207, 250, 254, 0.45) 5.6px 6.6px, transparent 7.2px),
+        radial-gradient(circle, rgba(207, 250, 254, 0.5) 0 1.2px, transparent 1.8px);
+    background-size: 210px 290px, 370px 430px, 130px 170px;
+    background-position: 30px 0, 180px 120px, 90px 60px;
+    opacity: 0.8;
+    animation: bubbles-rise 24s linear infinite;
+}
+
+[data-theme="ocean"] .cyber-bg::before {
+    top: -10vh;
+    bottom: auto;
+    left: -20vw;
+    right: -20vw;
+    height: 110vh;
+    background: repeating-linear-gradient(96deg, transparent 0 7vw, rgba(165, 243, 252, 0.09) 9vw 13vw, transparent 15vw 21vw);
+    -webkit-mask: linear-gradient(to bottom, #000, transparent 75%);
+    mask: linear-gradient(to bottom, #000, transparent 75%);
+    transform: none;
+    opacity: 1;
+    animation: rays-sway 9s ease-in-out infinite alternate;
+}
+
+[data-theme="ocean"] .cyber-bg::after {
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 14vh;
+    background: radial-gradient(ellipse at 50% 0%, rgba(186, 230, 253, 0.35), transparent 70%);
+    transform: none;
+    animation: twinkle 5s ease-in-out infinite alternate;
+}
+
+[data-theme="ocean"] .ring-hud__inner {
+    stroke: var(--accent-color);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-dasharray: 22 8;
+    opacity: 0.5;
+    filter: none;
+    animation-duration: 70s;
+}
+
+[data-theme="ocean"] .time-text {
+    text-shadow: 0 0 12px rgba(34, 211, 238, 0.7), 0 0 36px rgba(34, 211, 238, 0.35);
+}
+
+@keyframes bubbles-rise {
+    to {
+        background-position: 30px -1450px, 180px -1170px, 90px -1640px;
+    }
+}
+
+/* ---- Sunset: synthwave sky, striped sun on the horizon, pink grid floor ---- */
 [data-theme="sunset"] {
-    --bg-color: #431407;
-    --secondary-color: #7c2d12;
-    --primary-color: #f97316;
-    --accent-color: #fb923c;
-    --ring-bg: #9a3412;
-    --ring-active: #f97316;
+    --bg-color: #12061f;
+    --text-color: #fff1f8;
+    --primary-color: #ff5fa2;
+    --secondary-color: #24103a;
+    --accent-color: #ffd319;
+    --danger-color: #ff3b3b;
+    --ring-bg: #3a1550;
+    --ring-active: #ff5fa2;
+    --neon-yellow: #ffd319;
+    --neon-green: #ffd319;
+    --muted: #d3a6c8;
+    --on-primary: #1c0626;
+    background-image: linear-gradient(to bottom, #0e0420 0%, #2a0a45 28%, #7a1c66 48%, #e0456b 60%, #ff9a3d 66%, #12061f 66.1%, #0b0314 100%);
+    background-size: auto;
 }
 
-[data-theme="purple"] {
-    --bg-color: #2e1065;
-    --secondary-color: #3b0764;
-    --primary-color: #a855f7;
-    --accent-color: #c084fc;
-    --ring-bg: #581c87;
-    --ring-active: #a855f7;
+[data-theme="sunset"] .time-text {
+    animation: none;
 }
 
-[data-theme="rose"] {
-    --bg-color: #4c0519;
-    --secondary-color: #881337;
-    --primary-color: #f43f5e;
-    --accent-color: #fb7185;
-    --ring-bg: #9f1239;
-    --ring-active: #f43f5e;
+/* the sun, cut into bands, sinking on the horizon behind the timer */
+[data-theme="sunset"] .cyber-bg {
+    background: none;
+    opacity: 1;
+    animation: none;
+}
+
+[data-theme="sunset"] .cyber-bg::after {
+    top: auto;
+    bottom: 34vh;
+    left: 50%;
+    right: auto;
+    width: 62vmin;
+    height: 31vmin;
+    border-radius: 31vmin 31vmin 0 0;
+    background: linear-gradient(to bottom, #ffe45c 0%, #ff9a3d 45%, #ff3d81 100%);
+    -webkit-mask: repeating-linear-gradient(to bottom, #000 0 9%, transparent 9% 12%);
+    mask: repeating-linear-gradient(to bottom, #000 0 9%, transparent 9% 12%);
+    transform: translateX(-50%);
+    opacity: 0.85;
+    animation: sun-bands 6s linear infinite;
+}
+
+[data-theme="sunset"] .cyber-bg::before {
+    height: 34vh;
+    opacity: 0.7;
+    -webkit-mask: linear-gradient(to bottom, rgba(0, 0, 0, 0.35), #000 70%);
+    mask: linear-gradient(to bottom, rgba(0, 0, 0, 0.35), #000 70%);
+}
+
+/* dark glass inside the ring so the digits stay readable over the sun */
+[data-theme="sunset"] .timer-display-container::before {
+    inset: 5.5%;
+    background: radial-gradient(circle, rgba(18, 6, 31, 0.9) 0 60%, rgba(18, 6, 31, 0.72) 100%);
+}
+
+[data-theme="sunset"] .ring-hud__inner {
+    stroke: var(--accent-color);
+}
+
+@keyframes sun-bands {
+    to {
+        -webkit-mask-position: 0 3.72vmin;
+        mask-position: 0 3.72vmin;
+    }
+}
+
+/* Calm everything down for people who ask for less motion */
+@media (prefers-reduced-motion: reduce) {
+    .ring-beam {
+        display: none;
+    }
+
+    .cyber-bg,
+    .sound-wave,
+    .cyber-bg::before,
+    .cyber-bg::after,
+    .time-text,
+    .ring-hud__inner {
+        animation: none;
+    }
 }
 
 /* Modal Mobile */

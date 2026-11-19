@@ -84,7 +84,9 @@ class Timer {
 
     loadSettings() {
         const savedSound = this.safeStorageGet('timerSound');
-        const savedTheme = this.safeStorageGet('timerTheme');
+        // themes that were renamed keep working for returning visitors
+        const storedTheme = this.safeStorageGet('timerTheme');
+        const savedTheme = ({ purple: 'space', rose: 'sunset' })[storedTheme] || storedTheme;
         const savedCustomAudio = this.safeStorageGet('timerCustomAudio');
         const savedCustomAudioName = this.safeStorageGet('timerCustomAudioName');
 
@@ -692,30 +694,32 @@ class Timer {
         // Reset button is always enabled
         this.resetBtn.disabled = false;
 
+        document.body.dataset.timerState = state;
+
         if (state === 'running') {
             this.startBtn.disabled = true;
             this.pauseBtn.disabled = false;
             this.timerStatus.textContent = "Running...";
-            this.timerStatus.style.color = "#60a5fa";
+            this.timerStatus.style.color = "var(--primary-color)";
         } else if (state === 'paused') {
             this.startBtn.textContent = "Resume";
             this.startBtn.disabled = false;
             this.pauseBtn.disabled = true;
             this.timerStatus.textContent = "Paused";
-            this.timerStatus.style.color = "#fbbf24";
+            this.timerStatus.style.color = "var(--neon-yellow)";
         } else if (state === 'idle') {
             this.startBtn.textContent = "Start";
             this.startBtn.disabled = false;
             this.pauseBtn.disabled = true;
             this.timerStatus.textContent = "Ready";
-            this.timerStatus.style.color = "#94a3b8";
+            this.timerStatus.style.color = "var(--muted)";
         } else if (state === 'complete') {
             this.startBtn.textContent = "Start";
             this.startBtn.disabled = false;
             this.pauseBtn.disabled = true;
             this.timerStatus.textContent = "Time's Up!";
             this.breakLabel.classList.add('hidden');
-            this.timerStatus.style.color = "#ef4444";
+            this.timerStatus.style.color = "var(--danger-color)";
             document.title = "Time's Up!";
         }
     }
@@ -1102,39 +1106,7 @@ class Timer {
     }
 }
 
-// Motivational Quotes
-const motivationalQuotes = [
-    "The only way to do great work is to love what you do. — Steve Jobs",
-    "Education is the most powerful weapon which you can use to change the world. — Nelson Mandela",
-    "Success is not final, failure is not fatal: it is the courage to continue that counts. — Winston Churchill",
-    "The beautiful thing about learning is that no one can take it away from you. — B.B. King",
-    "Believe you can and you're halfway there. — Theodore Roosevelt",
-    "The expert in anything was once a beginner. — Helen Hayes",
-    "It does not matter how slowly you go as long as you do not stop. — Confucius",
-    "The more that you read, the more things you will know. The more that you learn, the more places you'll go. — Dr. Seuss",
-    "Success is the sum of small efforts, repeated day in and day out. — Robert Collier",
-    "Learning is not attained by chance, it must be sought for with ardor and diligence. — Abigail Adams",
-    "The mind is not a vessel to be filled, but a fire to be kindled. — Plutarch",
-    "You don't have to be great to start, but you have to start to be great. — Zig Ziglar",
-    "An investment in knowledge pays the best interest. — Benjamin Franklin",
-    "The secret of getting ahead is getting started. — Mark Twain",
-    "Live as if you were to die tomorrow. Learn as if you were to live forever. — Mahatma Gandhi",
-    "What we learn with pleasure we never forget. — Alfred Mercier",
-    "The capacity to learn is a gift; the ability to learn is a skill; the willingness to learn is a choice. — Brian Herbert",
-    "Start where you are. Use what you have. Do what you can. — Arthur Ashe",
-    "A person who never made a mistake never tried anything new. — Albert Einstein",
-    "The roots of education are bitter, but the fruit is sweet. — Aristotle"
-];
-
-function showRandomQuote() {
-    const el = document.getElementById('motivational-quote');
-    if (el) {
-        el.textContent = motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)];
-    }
-}
-
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     const timer = new Timer();
-    showRandomQuote();
 });
