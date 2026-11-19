@@ -1,11 +1,6 @@
 # Musical Class Break Timer
 
-A sleek, modern countdown timer built with vanilla HTML, CSS, and JavaScript. Designed for classrooms, study sessions, and productivity breaks.
-
-<p align="center">
-  <img src="assets/image1.jpeg" alt="Timer Interface" width="400"/>
-  <img src="assets/image2.jpeg" alt="Settings Panel" width="400"/>
-</p>
+A cyberpunk-styled countdown timer built with vanilla HTML, CSS, and JavaScript. Designed for classrooms, study sessions, and productivity breaks.
 
 ## Demo
 
@@ -23,7 +18,8 @@ A sleek, modern countdown timer built with vanilla HTML, CSS, and JavaScript. De
 - **Editable Break Label**: A flashing "Break Time" label below the countdown — click it to type your own text (e.g. "Lunch Break"), press Enter to save or Esc to cancel
 - **Custom Time**: Press **Custom** to set any duration in hours and minutes
 - **Accurate Timing**: Uses `Date.now()` for drift-free countdown accuracy
-- **Visual Progress Ring**: Animated circular progress indicator shows remaining time
+- **Visual Progress Ring**: Large circular progress indicator that scales with the window and shows remaining time
+- **Orbiting Beam**: A neon beam with a fading tail circles the ring — faster while the timer runs, frozen when paused, red when time is up
 - **Pause & Resume**: Pause the timer and resume from where you left off
 - **Reset**: Always-available reset button clears the timer back to 00:00:00
 
@@ -37,6 +33,13 @@ A sleek, modern countdown timer built with vanilla HTML, CSS, and JavaScript. De
 
 ### Customization
 - **6 Themes**: Cyberpunk (default), Standard, Space, Forest, Ocean, and Sunset, each with its own look and animated background
+  - **Cyberpunk**: neon HUD ring, glitching digits, and a green heartbeat trace with sound waves moving left to right over a grid floor
+  - **Standard**: the clean original design with no effects
+  - **Space**: drifting starfield, twinkling stars, and a shooting star
+  - **Forest**: fireflies and swaying light rays
+  - **Ocean**: rising bubbles and light from the surface
+  - **Sunset**: synthwave sky, striped sun, and a pink grid floor
+- **Reduced Motion**: Animations switch off for visitors who ask their system for less motion
 - **Settings Persist**: Your sound, theme, custom audio, and break label text are saved in localStorage
 - **Mobile Responsive**: Fully optimized for all screen sizes
 
@@ -78,8 +81,8 @@ musical-timer-countdown/
 ├── javascript/
 │   └── script.js       # Timer logic and audio handling
 ├── assets/
-│   ├── image1.jpeg     # Timer interface preview
-│   ├── image2.jpeg     # Settings panel preview
+│   ├── image1.jpeg     # Preview of the earlier design
+│   ├── image2.jpeg     # Settings preview of the earlier design
 │   └── sounds/         # Built-in audio files
 ├── screenshot.png      # App screenshot used in this README
 ├── docs/
@@ -90,14 +93,14 @@ musical-timer-countdown/
 ## Technologies
 
 - **HTML5**: Semantic markup with SVG progress ring
-- **CSS3**: CSS Variables for theming, Flexbox/Grid layouts, animations
+- **CSS3**: CSS Variables for theming, Flexbox/Grid layouts, container query units, masks, and keyframe animations for every effect (no canvas, no images)
 - **JavaScript (ES6+)**: Class-based architecture, Web Audio API for sound synthesis
 - **No Dependencies**: Pure vanilla implementation, no frameworks required
 
 ## Browser Support
 
 Works on all modern browsers that support:
-- CSS Custom Properties (CSS Variables)
+- CSS Custom Properties (CSS Variables), `color-mix()`, and container query units
 - Web Audio API
 - ES6+ JavaScript features
 - File API (for custom MP3 upload)
