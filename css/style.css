@@ -265,7 +265,7 @@ main {
     inset: 0;
     border-radius: 50%;
     pointer-events: none;
-    animation: beam-orbit 3s linear infinite, beam-flicker 1.7s steps(1, end) infinite;
+    animation: beam-orbit 7s linear infinite, beam-flicker 4s steps(1, end) infinite;
     filter: drop-shadow(0 0 4px var(--neon-green)) drop-shadow(0 0 12px var(--neon-green));
 }
 
@@ -303,7 +303,7 @@ main {
 
 /* the beam speeds up while the timer runs and turns red when time is up */
 body[data-timer-state="running"] .ring-beam {
-    animation-duration: 1.6s, 1.7s;
+    animation-duration: 4.5s, 4s;
 }
 
 body[data-timer-state="paused"] .ring-beam {
@@ -312,7 +312,7 @@ body[data-timer-state="paused"] .ring-beam {
 
 body[data-timer-state="complete"] .ring-beam {
     --neon-green: var(--danger-color);
-    animation-duration: 0.8s, 0.6s;
+    animation-duration: 2s, 1.2s;
 }
 
 @keyframes beam-orbit {
